@@ -12,8 +12,8 @@
 		}
 	],
 	"autoload": {
-		"psr-4": {
-			"vinpel\\BrowserID\\": "lib\\"
-		}
+	"autoload": {
+      "classmap": ["./lib"]
+    }
 	}
 }
