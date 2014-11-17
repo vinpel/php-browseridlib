@@ -1,4 +1,5 @@
 <?php
+namespace BrowserID;
 /**
  * Certificate
  *
@@ -8,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,23 +29,8 @@
  */
 
 /**
- * Include WebToken
- */
-require_once(BROWSERID_BASE_PATH."lib/BrowserID/web_token.php");
-
-/**
- * Include Assertion
- */
-require_once(BROWSERID_BASE_PATH."lib/BrowserID/assertion.php");
-
-/**
- * Include CertParams
- */
-require_once(BROWSERID_BASE_PATH."lib/BrowserID/cert_params.php");
-
-/**
  * Certificate
- * 
+ *
  * Represents an identity certificate.
  *
  * @package     BrowserID
@@ -53,38 +39,38 @@ require_once(BROWSERID_BASE_PATH."lib/BrowserID/cert_params.php");
  * @version     1.0.0
  */
 class Cert {
-    
+
     /**
      * Additional payload
-     * 
+     *
      * @access private
      * @var array
      */
     private $payload;
-    
+
     /**
      * Assertion parameters
-     * 
+     *
      * @access private
      * @var Assertion
      */
     private $assertion;
-    
+
     /**
      * Certificate parameters
-     * 
+     *
      * @access private
      * @var CertParams
      */
     private $certParams;
-    
+
     /**
      * Constructor
-     * 
+     *
      * @access public
      * @param Assertion $assertion The assertion parameters
      * @param CertParams $certParams The certificate parameters
-     * @param type $payload 
+     * @param type $payload
      */
     public function __construct($assertion, $certParams, $payload)
     {
@@ -92,31 +78,31 @@ class Cert {
         $this->certParams = $certParams;
         $this->payload = $payload;
     }
-    
+
     /**
      * Serialize parameters
-     * 
+     *
      * Serializes the objects parameters into an array.
-     * 
+     *
      * @param array $params An array of parameters, existing ones will be overwritten
      * @return array The combined params array
      */
     public function serialize($params = null) {
         if ($params == null)
             $params = array();
-        
+
         $this->payload = $params;
         $params = $this->assertion->serialize($params);
         $params = $this->certParams->serialize($params);
-        
+
         return $params;
     }
-    
+
     /**
      * Deserialize parameters
-     * 
+     *
      * Creates an instance based on the parameter object. The used parameters will be removed from params.
-     * 
+     *
      * @param array $params An array of parameters, used ones will be removed
      * @return Cert An instance of a certificate
      */
@@ -125,49 +111,49 @@ class Cert {
         $certParams = CertParams::deserialize($params);
         return new Cert($assertion, $certParams, $params);
     }
-    
+
     /**
      * Additional payload
-     * 
+     *
      * Gets the additional payload.
-     * 
+     *
      * @access public
-     * @return array 
+     * @return array
      */
     public function getPayload(){
         return $this->payload;
     }
-    
+
     /**
      * Assertion parameters
-     * 
+     *
      * Gets the assertion parameters.
-     * 
+     *
      * @access public
      * @return Assertion
      */
     public function getAssertion() {
         return $this->assertion;
     }
-    
+
     /**
      * Certificate parameters
-     * 
+     *
      * Gets the certificate parameters.
-     * 
+     *
      * @access public
      * @return CertParams
      */
     public function getCertParams() {
         return $this->certParams;
     }
-    
+
     /**
      * Parse serialized identity certificate
-     * 
-     * Parses a serialized, signed identity certificate and check if it's valid by 
+     *
+     * Parses a serialized, signed identity certificate and check if it's valid by
      * checking the signature against the public key of the issuer.
-     * 
+     *
      * @access public
      * @static
      * @param string $signedObject Signed identity certificate
@@ -182,12 +168,12 @@ class Cert {
         $params = $token->getPayload();
         return Cert::deserialize($params);
     }
-    
+
     /**
      * Sign identity certificate
-     * 
+     *
      * Sign and serialize this instance using the secret key of the issuer.
-     * 
+     *
      * @access public
      * @param AbstractSecretKey $secretKey Secret key of the issuer
      * @param array $additionalPayload Additional payload or null if none to add
@@ -198,15 +184,15 @@ class Cert {
         if ($additionalPayload !== null)
             $payload = array_merge($additionalPayload, $payload);
         $payload = $this->serialize($payload);
-        
+
         return $this->assertion->sign($secretKey, $payload);
     }
-    
+
     /**
      * Verify
-     * 
+     *
      * Checks if the parameters are valid.
-     * 
+     *
      * @access public
      * @param int $now Unix timestamp in milliseconds
      * @return boolean true, if the instance is valid
@@ -214,7 +200,7 @@ class Cert {
     public function verify($now) {
         if (!$this->assertion->verify($now))
             throw new Exception("cert assertion is not valid");
-        
+
         if (!$this->certParams->verify($now))
             throw new Exception("cert params are not valid");
 

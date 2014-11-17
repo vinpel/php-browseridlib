@@ -1,7 +1,8 @@
 <?php
+namespace BrowserID\Algs;
 /**
  * DSA-SHA Hashing Interface
- * 
+ *
  * Offers methods for signing and verifiying data using RSA-SHA
  *
  * LICENSE: Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -10,10 +11,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -46,7 +47,7 @@ require_once(BROWSERID_BASE_PATH."lib/Math/BigInteger.php");
 
 /**
  * DSA key pair
- * 
+ *
  * A pair of DSA keys.
  *
  * @package     Algs
@@ -57,25 +58,25 @@ require_once(BROWSERID_BASE_PATH."lib/Math/BigInteger.php");
 class DSAKeyPair extends AbstractKeyPair {
     /**
      * Is initialized
-     * 
+     *
      * @access private
      * @static
-     * @var type 
+     * @var type
      */
     private static $isInitialized = false;
-    
+
     /**
      * Big Integer zero
-     * 
+     *
      * @access public
      * @static
-     * @var type 
+     * @var type
      */
     public static $zero;
-    
+
     /**
      * Allowed keysizes
-     * 
+     *
      * @access public
      * @static
      * @var array
@@ -101,10 +102,10 @@ class DSAKeyPair extends AbstractKeyPair {
             "hashAlg" => "sha256"
         )
     );
-    
+
     /**
      * Initialization routine
-     * 
+     *
      * @access public
      * @static
      */
@@ -114,26 +115,26 @@ class DSAKeyPair extends AbstractKeyPair {
             return;
             //Fix
         self::$zero = new Math_BigInteger();
-        
+
         // turn the keysize params to bigints
         foreach(DSAKeyPair::$KEYSIZES as $keysize => $entry) {
             $params = &DSAKeyPair::$KEYSIZES[$keysize];
             $params["p"] = new Math_BigInteger($params["p"], 16);
             $params["q"] = new Math_BigInteger($params["q"], 16);
             $params["g"] = new Math_BigInteger($params["g"], 16);
-            
+
             // sizes
             $params["q_bitlength"] = strlen($params["q"]->toBits());
         }
-        
+
         self::$isInitialized = true;
     }
-    
+
     /**
      * Get keysize
-     * 
+     *
      * Gets the keysize depending on the bit count of the rsa key.
-     * 
+     *
      * @access public
      * @statis
      * @param int $size Amount of bits
@@ -153,7 +154,7 @@ class DSAKeyPair extends AbstractKeyPair {
 
         return null;
     }
-    
+
     /**
      * @see AbstractKeyPair::createPublicKey();
      */
@@ -161,7 +162,7 @@ class DSAKeyPair extends AbstractKeyPair {
     {
         return new DSAPublicKey();
     }
-    
+
     /**
      * @see AbstractKeyPair::createSecretKey();
      */
@@ -172,9 +173,9 @@ class DSAKeyPair extends AbstractKeyPair {
 
     /**
      * Generate keypair
-     * 
+     *
      * Generates a keypair for a given keysize in bits
-     * 
+     *
      * @abstract
      * @access public
      * @static
@@ -184,15 +185,15 @@ class DSAKeyPair extends AbstractKeyPair {
     public static function generate($keysize) {
         if (!isset(self::$KEYSIZES[$keysize]))
             throw new NoSuchAlgorithmException("keysize not supported");
-        
+
         $static_keys = self::$KEYSIZES[$keysize];
         $instance = new DSAKeyPair();
         $keys = Crypt_DSA::generate($static_keys["p"], $static_keys["q"], $static_keys["g"]);
         $instance->keysize = $keysize;
-        
+
         $instance->secretKey = new DSASecretKey($keys["x"], $keysize);
         $instance->publicKey = new DSAPublicKey($keys["y"], $keysize);
-        
+
         $instance->algorithm = $instance->publicKey->algorithm = $instance->secretKey->algorithm = "DS";
         return $instance;
     }
@@ -200,7 +201,7 @@ class DSAKeyPair extends AbstractKeyPair {
 
 /**
  * DSA public key
- * 
+ *
  * A public key using the DSA algorithm.
  *
  * @package     Algs
@@ -209,45 +210,45 @@ class DSAKeyPair extends AbstractKeyPair {
  * @version     1.0.0
  */
 class DSAPublicKey extends AbstractPublicKey {
-    
+
     /**
      * Public key
-     * 
+     *
      * @access private
      * @var Math_BigInteger
      */
     private $key_y;
-    
+
     /**
      * Prime p
-     * 
+     *
      * @access private
      * @var Math_BigInteger
      */
     private $key_p;
-    
+
     /**
      * Prime q
-     * 
+     *
      * @access private
      * @var Math_BigInteger
      */
     private $key_q;
-    
+
     /**
      * Group g
-     * 
+     *
      * @access private
      * @var Math_BigInteger
      */
     private $key_g;
-    
+
     /**
      * Constructor
-     * 
+     *
      * @access public
      * @param Math_BigInteger $key Public key as number
-     * @param type $keysize 
+     * @param type $keysize
      */
     public function __construct($key = null, $keysize = null)
     {
@@ -275,7 +276,7 @@ class DSAPublicKey extends AbstractPublicKey {
         $this->key_values = DSAKeyPair::$KEYSIZES[$this->keysize];
         return $this;
     }
-    
+
     /**
      * @see AbstractKeyInstance::serializeToObject($obj)
      */
@@ -285,7 +286,7 @@ class DSAPublicKey extends AbstractPublicKey {
         $obj["g"] = $this->key_g->toHex();
         $obj["y"] = $this->key_y->toHex();
     }
-    
+
     /**
      * @see AbstractPublicKey::verify($message, $signature)
      */
@@ -294,15 +295,15 @@ class DSAPublicKey extends AbstractPublicKey {
         $params = DSAKeyPair::$KEYSIZES[$this->keysize];
         $hash_alg = $params["hashAlg"];
         $hexlength = $params["q_bitlength"] / 4;
-        
+
         // we pre-pad with 0s because encoding may have gotten rid of some
         $signature = Utils::hex_lpad(bin2hex($signature), $hexlength * 2);
-        
+
         // now this should only happen if the signature was longer
         if (strlen($signature) != ($hexlength * 2)) {
             throw new AlgorithmException("problem with r/s combo: " . sizeof($signature) . "/" . $hexlength . " - " . $signature);
         }
-        
+
         $r = new Math_BigInteger(substr($signature, 0, $hexlength), 16);
         $s = new Math_BigInteger(substr($signature, $hexlength, $hexlength), 16);
 
@@ -311,18 +312,18 @@ class DSAPublicKey extends AbstractPublicKey {
         if (($r->compare(DSAKeyPair::$zero) < 0) || ($r->compare($this->key_q) > 0)) {
             throw new AlgorithmException("problem with r: " . $r->toString());
         }
-        
+
         if (($s->compare(DSAKeyPair::$zero) < 0) || ($s->compare($this->key_q) > 0)) {
             throw new AlgorithmException("problem with s: " . $r->toString());
         }
-        
+
         return Crypt_DSA::verify($message, $hash_alg, $r, $s, $this->key_p, $this->key_q, $this->key_g, $this->key_y);
     }
 }
 
 /**
  * DSA secret key
- * 
+ *
  * A secret key using the DSA algorithm.
  *
  * @package     Algs
@@ -331,45 +332,45 @@ class DSAPublicKey extends AbstractPublicKey {
  * @version     1.0.0
  */
 class DSASecretKey extends AbstractSecretKey {
-    
+
     /**
      * Secret key
-     * 
+     *
      * @access private
      * @var Math_BigInteger
      */
     private $key_x;
-    
+
     /**
      * Prime p
-     * 
+     *
      * @access private
      * @var Math_BigInteger
      */
     private $key_p;
-    
+
     /**
      * Prime q
-     * 
+     *
      * @access private
      * @var Math_BigInteger
      */
     private $key_q;
-    
+
     /**
      * Group g
-     * 
+     *
      * @access private
      * @var Math_BigInteger
      */
     private $key_g;
-    
+
     /**
      * Constructor
-     * 
+     *
      * @access public
      * @param Math_BigInteger $key Secret key as number
-     * @param type $keysize 
+     * @param type $keysize
      */
     public function __construct($key = null, $keysize = null)
     {
@@ -396,7 +397,7 @@ class DSASecretKey extends AbstractSecretKey {
         $this->keysize = DSAKeyPair::_getKeySizeFromRSAKeySize(strlen($this->key_p->toBits()));
         return $this;
     }
-    
+
     /**
      * @see AbstractKeyInstance::serializeToObject($obj)
      */
@@ -406,7 +407,7 @@ class DSASecretKey extends AbstractSecretKey {
         $obj["g"] = $this->key_g->toHex();
         $obj["x"] = $this->key_x->toHex();
     }
-    
+
     /**
      * @see AbstractSecretKey::sign($message)
      */
@@ -415,7 +416,7 @@ class DSASecretKey extends AbstractSecretKey {
         $params = DSAKeyPair::$KEYSIZES[$this->keysize];
         $hash_alg = $params["hashAlg"];
         $hexlength = $params["q_bitlength"] / 4;
-        
+
         $keys = Crypt_DSA::sign($message, $hash_alg, $this->key_p, $this->key_q, $this->key_g, $this->key_x);
         $signature = Utils::hex_lpad($keys["r"]->toHex(), $hexlength) . Utils::hex_lpad($keys["s"]->toHex(), $hexlength);
         return pack("H*" , $signature);

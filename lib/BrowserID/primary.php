@@ -1,4 +1,5 @@
 <?php
+namespace BrowserID;
 /**
  * Identity provider
  *
@@ -8,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,35 +29,21 @@
  */
 
 /**
- * Include Utils
- */
-require_once(BROWSERID_BASE_PATH."lib/BrowserID/utils.php");
-
-/**
- * Include Secrets
- */
-require_once(BROWSERID_BASE_PATH."lib/BrowserID/secrets.php");
-
-/**
  * Include Algorithms
  */
 require_once(BROWSERID_BASE_PATH."lib/BrowserID/algs.php");
 
-/**
- * Include Configuration
- */
-require_once(BROWSERID_BASE_PATH."lib/BrowserID/configuration.php");
 
 /**
  * Identity Provider (Primary)
- * 
- * To verify the validity of certificates, the public keys of the identity providers 
- * have to be well-known. Therefore every identity provider has offer an /.well-known/browserid 
+ *
+ * To verify the validity of certificates, the public keys of the identity providers
+ * have to be well-known. Therefore every identity provider has offer an /.well-known/browserid
  * under his domain.
- * 
- * This class can check a identity provider using the 'Basic Support Document', offering his 
- * public key, an authentication- and an provisioning-url for his own signed identity 
- * certificates or the 'Delegated Support Document' stating the authority which takes care 
+ *
+ * This class can check a identity provider using the 'Basic Support Document', offering his
+ * public key, an authentication- and an provisioning-url for his own signed identity
+ * certificates or the 'Delegated Support Document' stating the authority which takes care
  * of the signing and key holding.
  *
  * @package     BrowserID
@@ -65,49 +52,49 @@ require_once(BROWSERID_BASE_PATH."lib/BrowserID/configuration.php");
  * @version     1.0.0
  */
 class Primary {
-    
+
     /**
      * The path to the well-known document
      */
     const WELL_KNOWN_URL = "/.well-known/browserid";
-    
+
     /**
      * The maximum number of hops supported for cert chains
      */
     const MAX_AUTHORITY_DELEGATIONS = 6;
-    
+
     /**
      * Initialization status
-     * 
+     *
      * This shows if the class and static variables are already initialized.
-     * 
-     * @access private 
-     * @static 
+     *
+     * @access private
+     * @static
      * @var boolean
      */
     private static $initialized = false;
-    
+
     /**
      * Shimmed primaries
-     * 
-     * A list of shimmed primaries. Used for local developement or standard 
+     *
+     * A list of shimmed primaries. Used for local developement or standard
      * certificates to boost up key retrieval.
-     * 
-     * Every entry of the array contains the 'origin' where the traffic should be 
+     *
+     * Every entry of the array contains the 'origin' where the traffic should be
      * directed to and a 'body' where the public key is stored.
-     * 
-     * @access private 
-     * @static 
+     *
+     * @access private
+     * @static
      * @var array Indixed by the domain name
      */
     private static $g_shim_cache = array();
-    
+
     /**
      * Public key of the Identity Provider
-     * 
-     * If this server is used as identity provider, this localy public key is used 
+     *
+     * If this server is used as identity provider, this localy public key is used
      * for verification instead of using the well-known protocol.
-     * 
+     *
      * @access private
      * @static
      * @var AbstractPublicKey Public key of this identity provider
@@ -116,11 +103,11 @@ class Primary {
     /**
 	*	path for the cache of public key
 	*/
-	
+
 	private static $well_know_path = null;
     /**
      * Initialization routine
-     * 
+     *
      * @access public
      * @static
      */
@@ -128,7 +115,7 @@ class Primary {
     {
         if (Primary::$initialized)
             return;
-        
+
         // Support "shimmed primaries" for local development. That is an environment variable that is any number of
         // CSV values of the form:
         // <domain>|<origin>|<path to .well-known/browserid>,
@@ -136,41 +123,41 @@ class Primary {
         // be directed, and 'path to .well-known/browserid' is a path to the browserid file for the domain
       //  foreach(Configuration::getInstance()->get("shimmed_primaries") as $primary)
         //{
-			
-			
+
+
 		Primary::$well_know_path=Utils::path_concat(str_replace('lib/php-browserid/','',Configuration::getInstance()->get('base_path')).'storage',
 						Configuration::getInstance()->get("shimmed_path"));
-		
+
 			//load sample file
 		Primary::updateShimCache('login.persona.org',file_get_contents(Utils::path_concat(Primary::$well_know_path,'persona.org')));
-		
+
 		/*$dom=array(
 		'login.persona.org'=> array(
 				'origin'=>'https://login.persona.org',
 				//'delegate'=>'persona.org',
-				'PublicKeyFile'=>'1')	
+				'PublicKeyFile'=>'1')
 		);*/
 		//file_put_contents(Primary::$indexFile,json_encode($dom));
 
             //list($domain, $origin, $path) = explode("|", $primary);
-            
+
             //logger.info("inserted primary info for '" + domain + "' into cache, TODO point at '" + origin + "'");
         //}
         Primary::$public_key = Secrets::loadPublicKey();
-        
+
         Primary::$initialized = true;
     }
-    
+
     /**
      * Well-Known document parsing
-     * 
-     * Parses the reply of the well-known document, verifying that all needed 
-     * parts are contained. 'Basic Support Documents' have to implement the keys 
-     * 'public-key', 'authentication' and 'provisioning'. 'Delegated Support Documents' 
+     *
+     * Parses the reply of the well-known document, verifying that all needed
+     * parts are contained. 'Basic Support Documents' have to implement the keys
+     * 'public-key', 'authentication' and 'provisioning'. 'Delegated Support Documents'
      * only need an 'authority' entry.
-     * 
+     *
      * This is called recursive for delegated identity providers.
-     * 
+     *
      * @access public
      * @static
      * @param string $body The body of the well-known document
@@ -189,12 +176,12 @@ class Primary {
         if ($domain != Configuration::getInstance()->get("master_idp")) { // TODO: This is only valid for mozillas main idp
             $want = array_merge( $want, array ('authentication', 'provisioning' ) );
         }
-		
+
         $got = array();
         if (is_array($v)) {
             $got = array_keys($v);
         }
-        
+
         foreach ($got as $k) {
             $dels = array_keys($delegates);
             if ('authority' === $k) {
@@ -203,7 +190,7 @@ class Primary {
                     // return to break out of function, but callbacks are actual program flow
                     throw new Exception("Circular reference in delegating authority " . json_encode($delegates));
                 }
-                
+
                 if (sizeof($dels) > Primary::MAX_AUTHORITY_DELEGATIONS) {
                     throw new Exception("Too many hops while delegating authority " . json_encode($dels));
                 }
@@ -216,21 +203,21 @@ class Primary {
                 return Primary::parseWellKnownBody($r["body"], $r["domain"], $r["delegates"]);
             }
         }
-        
+
         $missing_keys = array();
         foreach ($want as $k) {
             if (array_search($k, $got) === false) {
                 array_push($missing_keys, $k);
             }
         }
-        
+
         if (sizeof($missing_keys) > 0) {
             throw new Exception("missing required key: " . join(', ', $missing_keys));
         };
 
         // Allow SHIMMED_PRIMARIES to change example.com into 127.0.0.1:10005
         $url_prefix = 'https://' . $domain;
-					
+
         if (isset(Primary::$g_shim_cache[$domain])) {
             $url_prefix = Primary::$g_shim_cache[$domain]["origin"];
         }
@@ -258,10 +245,10 @@ class Primary {
 		foreach (Primary::$g_shim_cache as $_domain=>$val){
 			Primary::$g_shim_cache[$_domain] = array(
 			"origin" => $val->origin,
-			"PublicKeyFile"=>$val->PublicKeyFile);				
+			"PublicKeyFile"=>$val->PublicKeyFile);
 			}
 		}
-	
+
 		//add a new domain in the mem array & save it (index & publi key file)
 	if (!is_null($domain)  && !isset(Primary::$g_shim_cache[$domain])){
 		$origin="https://" . $domain;
@@ -269,25 +256,25 @@ class Primary {
 			"origin"=>$origin,
 			"PublicKeyFile"=>base64_encode($origin)
             );
-			
-		file_put_contents(Primary::$well_know_path.'/index',json_encode(Primary::$g_shim_cache));				
-		file_put_contents(Primary::$well_know_path.'/'.base64_encode($origin),$buffer);				
+
+		file_put_contents(Primary::$well_know_path.'/index',json_encode(Primary::$g_shim_cache));
+		file_put_contents(Primary::$well_know_path.'/'.base64_encode($origin),$buffer);
 		\myClass\Log::write('updateShimCache '.$domain);
-		
+
 		}
-		
-				
-	
-	
-		
-		
-			
+
+
+
+
+
+
+
 	}
     /**
      * Well-Known document retrieval
-     * 
+     *
      * Get the body of the well-known document of a domain.
-     * 
+     *
      * @access public
      * @static
      * @param string $domain The domain for which the well-known document should be retrieved
@@ -296,7 +283,7 @@ class Primary {
      */
     public static function getWellKnown($domain, $delegates) {
         // TODO: Replace with primary cache here!
-		
+
         if (isset(Primary::$g_shim_cache[$domain])) {
             return array(
                 "body" => file_get_contents(Utils::path_concat(Primary::$well_know_path,Primary::$g_shim_cache[$domain]['PublicKeyFile'])),
@@ -308,7 +295,7 @@ class Primary {
         // TODO: Replace with primary cache here!
 
         $ch = curl_init();
-        
+
         curl_setopt($ch, CURLOPT_URL, "https://" . $domain . Primary::WELL_KNOWN_URL);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if (substr(PHP_OS, 0, 3) == 'WIN') {
@@ -324,8 +311,8 @@ class Primary {
             //logger.debug(domain + ' is not a browserid primary: ' + e.toString());
             throw new Exception($domain . ' is not a browserid primary.');
         }
-		
-	
+
+
 		Primary::updateShimCache($domain,$buffer);
         // TODO: Insert requested data into primary cache here
         return array(
@@ -336,9 +323,9 @@ class Primary {
 
     /**
      * Check domain support
-     * 
+     *
      * Checks if the given domain supports BrowserID/Persona and offers a support document.
-     * 
+     *
      * @access public
      * @static
      * @param string $domain The name of the domain
@@ -346,12 +333,12 @@ class Primary {
      * @return array @see Primary::getWellKnown() or null if not supported
      */
     public static function checkSupport($domain, $delegates = null) {
-    
+
         // Delegates will be populatd via recursion to detect cycles
         if (!is_array($delegates)) {
             $delegates = array();
         }
-    
+
 	/*
         if (config.get('disable_primary_support')) {
         return process.nextTick(function() { cb(null, false); });
@@ -376,7 +363,7 @@ class Primary {
 
     /**
      * Retrieve public key for domain
-     * 
+     *
      * Gets the public key for a domain that acts as Persona Identity Provider
      * @access public
      * @static
@@ -385,7 +372,7 @@ class Primary {
      */
     public static function getPublicKey($domain) {
         $result = Primary::checkSupport($domain);
-    
+
         if ($result["publicKey"] === null) {
             throw new Exception("can't get public key for " . $domain);
         }
@@ -396,14 +383,14 @@ class Primary {
     // Does emailDomain actual delegate to the issuingDomain?
     /**
      * Check for authority delegation
-     * 
-     * Checking if the issuing domain is allowed to issue identity certificates for 
-     * this email  domain. This should only be the case if the issuing domain is 
+     *
+     * Checking if the issuing domain is allowed to issue identity certificates for
+     * this email  domain. This should only be the case if the issuing domain is
      * Mozilla's server or if the email domain is delegating to the issuing domain.
-     * 
+     *
      * @param string $emailDomain The domain of the mail, the expected issuer
      * @param string $issuingDomain The domain that issued the assertion
-     * @return type 
+     * @return type
      */
     static function delegatesAuthority($emailDomain, $issuingDomain) {
         /* // TODO: Maybe later
@@ -418,11 +405,11 @@ class Primary {
         }*/
 
         $result = Primary::checkSupport($emailDomain);
-		
+
         $urls = &$result["urls"];
 
         // Check http or https://{issuingDomain}/some/sign_in_path
-        if (!$err && $urls && $urls["auth"] && 
+        if (!$err && $urls && $urls["auth"] &&
             strpos($urls["auth"], '://' . issuingDomain . '/') !== false)
         {
             return true;
