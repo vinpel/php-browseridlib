@@ -112,8 +112,8 @@ class DSAKeyPair extends AbstractKeyPair {
     {
         if (self::$isInitialized)
             return;
-        
-        $zero = new Math_BigInteger();
+            //Fix
+        self::$zero = new Math_BigInteger();
         
         // turn the keysize params to bigints
         foreach(DSAKeyPair::$KEYSIZES as $keysize => $entry) {
@@ -305,6 +305,7 @@ class DSAPublicKey extends AbstractPublicKey {
         
         $r = new Math_BigInteger(substr($signature, 0, $hexlength), 16);
         $s = new Math_BigInteger(substr($signature, $hexlength, $hexlength), 16);
+
 
         // check rangeconstraints
         if (($r->compare(DSAKeyPair::$zero) < 0) || ($r->compare($this->key_q) > 0)) {

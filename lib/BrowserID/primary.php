@@ -113,7 +113,11 @@ class Primary {
      * @var AbstractPublicKey Public key of this identity provider
      */
     private static $public_key = null;
-    
+    /**
+	*	path for the cache of public key
+	*/
+	
+	private static $well_know_path = null;
     /**
      * Initialization routine
      * 
@@ -130,15 +134,28 @@ class Primary {
         // <domain>|<origin>|<path to .well-known/browserid>,
         // where 'domain' is the domain that we would like to shim. 'origin' is the origin to which traffic should
         // be directed, and 'path to .well-known/browserid' is a path to the browserid file for the domain
-        foreach(Configuration::getInstance()->get("shimmed_primaries") as $primary)
-        {
-            list($domain, $origin, $path) = explode("|", $primary);
-            Primary::$g_shim_cache[$domain] = array(
-                "origin" => $origin,
-                "body" => @file_get_contents(Utils::path_concat(Configuration::getInstance()->get("shimmed_path"), $path)) // TODO: Remove body and implement this into PrimaryCache!
-            );
+      //  foreach(Configuration::getInstance()->get("shimmed_primaries") as $primary)
+        //{
+			
+			
+		Primary::$well_know_path=Utils::path_concat(str_replace('lib/php-browserid/','',Configuration::getInstance()->get('base_path')).'storage',
+						Configuration::getInstance()->get("shimmed_path"));
+		
+			//load sample file
+		Primary::updateShimCache('login.persona.org',file_get_contents(Utils::path_concat(Primary::$well_know_path,'persona.org')));
+		
+		/*$dom=array(
+		'login.persona.org'=> array(
+				'origin'=>'https://login.persona.org',
+				//'delegate'=>'persona.org',
+				'PublicKeyFile'=>'1')	
+		);*/
+		//file_put_contents(Primary::$indexFile,json_encode($dom));
+
+            //list($domain, $origin, $path) = explode("|", $primary);
+            
             //logger.info("inserted primary info for '" + domain + "' into cache, TODO point at '" + origin + "'");
-        }
+        //}
         Primary::$public_key = Secrets::loadPublicKey();
         
         Primary::$initialized = true;
@@ -213,6 +230,7 @@ class Primary {
 
         // Allow SHIMMED_PRIMARIES to change example.com into 127.0.0.1:10005
         $url_prefix = 'https://' . $domain;
+					
         if (isset(Primary::$g_shim_cache[$domain])) {
             $url_prefix = Primary::$g_shim_cache[$domain]["origin"];
         }
@@ -232,7 +250,39 @@ class Primary {
             "urls" => $urls
         );
     }
-
+	public static function updateShimCache($domain=null,$buffer=null){
+	$indexFile=Utils::path_concat(Primary::$well_know_path,'index');
+		//load from cache
+	if (is_file($indexFile)){
+		Primary::$g_shim_cache=(array)json_decode(file_get_contents($indexFile));
+		foreach (Primary::$g_shim_cache as $_domain=>$val){
+			Primary::$g_shim_cache[$_domain] = array(
+			"origin" => $val->origin,
+			"PublicKeyFile"=>$val->PublicKeyFile);				
+			}
+		}
+	
+		//add a new domain in the mem array & save it (index & publi key file)
+	if (!is_null($domain)  && !isset(Primary::$g_shim_cache[$domain])){
+		$origin="https://" . $domain;
+		Primary::$g_shim_cache[$domain]= array(
+			"origin"=>$origin,
+			"PublicKeyFile"=>base64_encode($origin)
+            );
+			
+		file_put_contents(Primary::$well_know_path.'/index',json_encode(Primary::$g_shim_cache));				
+		file_put_contents(Primary::$well_know_path.'/'.base64_encode($origin),$buffer);				
+		\myClass\Log::write('updateShimCache '.$domain);
+		
+		}
+		
+				
+	
+	
+		
+		
+			
+	}
     /**
      * Well-Known document retrieval
      * 
@@ -246,16 +296,19 @@ class Primary {
      */
     public static function getWellKnown($domain, $delegates) {
         // TODO: Replace with primary cache here!
-        if (Primary::$g_shim_cache[$domain]) {
+		
+        if (isset(Primary::$g_shim_cache[$domain])) {
             return array(
-                "body" => Primary::$g_shim_cache[$domain]["body"],
+                "body" => file_get_contents(Utils::path_concat(Primary::$well_know_path,Primary::$g_shim_cache[$domain]['PublicKeyFile'])),
                 "domain" => $domain,
                 "delegates" => $delegates
             );
         }
+		\myClass\Log::write('getWellKnown for  '.$domain);
         // TODO: Replace with primary cache here!
 
         $ch = curl_init();
+        
         curl_setopt($ch, CURLOPT_URL, "https://" . $domain . Primary::WELL_KNOWN_URL);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if (substr(PHP_OS, 0, 3) == 'WIN') {
@@ -267,14 +320,14 @@ class Primary {
         }
         $buffer = curl_exec($ch);
         curl_close($ch);
-
         if ($buffer === false) {
             //logger.debug(domain + ' is not a browserid primary: ' + e.toString());
             throw new Exception($domain . ' is not a browserid primary.');
         }
 		
+	
+		Primary::updateShimCache($domain,$buffer);
         // TODO: Insert requested data into primary cache here
-
         return array(
             "body" => $buffer,
             "domain" => $domain,
@@ -293,15 +346,17 @@ class Primary {
      * @return array @see Primary::getWellKnown() or null if not supported
      */
     public static function checkSupport($domain, $delegates = null) {
+    
         // Delegates will be populatd via recursion to detect cycles
         if (!is_array($delegates)) {
             $delegates = array();
         }
-
-        /*if (config.get('disable_primary_support')) {
+    
+	/*
+        if (config.get('disable_primary_support')) {
         return process.nextTick(function() { cb(null, false); });
-        }*/
-
+        }
+*/
         if (!is_string($domain) || strlen($domain) == 0) {
             throw new Exception("invalid domain");
         }
@@ -330,7 +385,7 @@ class Primary {
      */
     public static function getPublicKey($domain) {
         $result = Primary::checkSupport($domain);
-
+    
         if ($result["publicKey"] === null) {
             throw new Exception("can't get public key for " . $domain);
         }
@@ -363,6 +418,7 @@ class Primary {
         }*/
 
         $result = Primary::checkSupport($emailDomain);
+		
         $urls = &$result["urls"];
 
         // Check http or https://{issuingDomain}/some/sign_in_path

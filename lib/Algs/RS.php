@@ -134,12 +134,33 @@ class RSAKeyPair extends AbstractKeyPair {
         
         $instance = new RSAKeyPair();
         $instance->rsa = new Crypt_RSA();
+        
+        
+        
+        
         $instance->rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
         $instance->rsa->setHash(self::$KEYSIZES[$keysize]["hashAlg"]);
         $keys = $instance->rsa->createKey(self::$KEYSIZES[$keysize]["rsaKeySize"]);
+        
+        $details = openssl_get_publickey($keys["publickey"]);
+        $t=openssl_pkey_get_details($details);
+        foreach ($t['rsa'] as $key=>$val)
+            $public[$key]=bin2hex($val);
+        
+        $details = openssl_pkey_get_private($keys["privatekey"]);
+        $t=openssl_pkey_get_details($details);
+        
+        foreach ($t['rsa'] as $key=>$val)
+            $private[$key]=bin2hex($val);
+         $instance->publicKey =json_encode($public);    
+          $instance->secretKey =json_encode($private);
+        return array($instance->secretKey,$instance->publicKey);
+        
+
         $instance->keysize = $keysize;
         
         $instance->publicKey = new RSAPublicKey($keys["publickey"], $keysize);
+        
         $instance->secretKey = new RSASecretKey($keys["privatekey"], $keysize);
         
         $instance->algorithm = $instance->publicKey->algorithm = $instance->secretKey->algorithm = "RS";

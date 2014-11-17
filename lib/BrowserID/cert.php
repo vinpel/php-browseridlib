@@ -179,7 +179,6 @@ class Cert {
         $token = WebToken::parse($signedObject);
         if (!$token->verify($publicKey))
             throw new Exception("cert was not valid signed");
-
         $params = $token->getPayload();
         return Cert::deserialize($params);
     }

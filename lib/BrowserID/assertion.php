@@ -219,6 +219,8 @@ class Assertion {
         }
 
         // check exp expiration
+        //expired Part
+        
         if ($this->expiresAt != null) {
             if ($this->expiresAt < $now)
                 throw new Exception("assertion has expired");

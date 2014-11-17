@@ -57,7 +57,7 @@ class Configuration {
      * @access private
      * @var string  The selected environment
      */
-    private $environment = 'production';
+    private $environment = 'developement';
     
     /**
      * The configuration selected through the environment
@@ -108,9 +108,9 @@ class Configuration {
             'use_remote_verifier' => true,
             'assertion_validity' => 300,
             'identity_validity' => 86400,
-            'base_path' => 'C:/xampp/htdocs/browserid_sample/browseridlib/',
+            'base_path' => str_replace('\\','/',substr(__dir__,0,strlen(__dir__)-13)),
             'var_path' => 'var',
-            'shimmed_path' => 'shimmed_primaries',
+            'shimmed_path' => 'well-known',
             'shimmed_primaries' => array()
         );
         

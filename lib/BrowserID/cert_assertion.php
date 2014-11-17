@@ -1,4 +1,5 @@
 <?php
+class ExceptionAudienceMismatch extends \Exception { }
 /**
  * BrowserID certificate assertion implementation
  *
@@ -145,9 +146,9 @@ class CertAssertion {
             $want = CertAssertion::normalizeParsedURL(parse_url($want));
 
             // compare the parts explicitly provided by the client
-            if (isset($this->audience_scheme) && $this->audience_scheme != $want['scheme']) throw new Exception("scheme mismatch");
-            if (isset($this->audience_port) && $this->audience_port != $want['port']) throw new Exception("port mismatch");
-            if (isset($this->audience_domain) && $this->audience_domain != $want['host']) throw new Exception("domain mismatch");
+            if (isset($this->audience_scheme) && $this->audience_scheme != $want['scheme']) throw new Exception("scheme mismatch : ".$want['scheme']);
+            if (isset($this->audience_port) && $this->audience_port != $want['port']) throw new Exception("port mismatch : ".$want['port']);
+            if (isset($this->audience_domain) && $this->audience_domain != $want['host']) throw new Exception("domain mismatch ".$want['host'].' et '.$this->audience_domain);
 
             return null;
         } catch(Exception $e) {
@@ -247,7 +248,8 @@ class CertAssertion {
         if ($err) {
             //logger.debug("verification failure, audience mismatch: '"
             //             + assertionParams.audience + "' != '" + audience + "': " + err);
-            throw new Exception("audience mismatch: " . $err);
+            
+            throw new ExceptionAudienceMismatch($err);
         }
 
         // principal and issuer are in the last cert
@@ -258,7 +260,8 @@ class CertAssertion {
         // verify that the issuer is the same as the email domain or
         // that the email's domain delegated authority to the issuer
         $domainFromEmail = preg_replace("/^.*@/", "", $principal["email"]);
-
+    //kiki : mettre ici la liste des issuers que nous connaissons
+    
         if ($issuer != Configuration::getInstance()->get("master_idp") && // TODO: This is only valid for mozillas main idp
             $issuer != Configuration::getInstance()->get("hostname") &&
             $issuer !== $domainFromEmail)
