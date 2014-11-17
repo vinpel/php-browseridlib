@@ -12,3 +12,4 @@ namespace BrowserID;
  * @version     1.0.0
  */
 class AlgorithmException extends Exception { }
+?>

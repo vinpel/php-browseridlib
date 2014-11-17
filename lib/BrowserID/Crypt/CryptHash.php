@@ -1,5 +1,5 @@
 <?php
-
+namespace BrowserID\Crypt;
 /**
  * Pure-PHP implementations of keyed-hash message authentication codes (HMACs) and various cryptographic hashing functions.
  *
@@ -7,7 +7,7 @@
  *
  * md2, md5, md5-96, sha1, sha1-96, sha256, sha256-96, sha384, and sha512, sha512-96
  *
- * If {@link Crypt_Hash::setKey() setKey()} is called, {@link Crypt_Hash::hash() hash()} will return the HMAC as opposed to
+ * If {@link CryptHash::setKey() setKey()} is called, {@link CryptHash::hash() hash()} will return the HMAC as opposed to
  * the hash.  If no valid algorithm is provided, sha1 will be used.
  *
  * PHP versions 4 and 5
@@ -20,7 +20,7 @@
  * <?php
  *    include 'Crypt/Hash.php';
  *
- *    $hash = new Crypt_Hash('sha1');
+ *    $hash = new CryptHash('sha1');
  *
  *    $hash->setKey('abcdefg');
  *
@@ -47,7 +47,7 @@
  * THE SOFTWARE.
  *
  * @category  Crypt
- * @package   Crypt_Hash
+ * @package   CryptHash
  * @author    Jim Wigginton <terrafrost@php.net>
  * @copyright MMVII Jim Wigginton
  * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
@@ -56,7 +56,7 @@
 
 /**#@+
  * @access private
- * @see Crypt_Hash::Crypt_Hash()
+ * @see CryptHash::CryptHash()
  */
 /**
  * Toggles the internal implementation
@@ -75,16 +75,16 @@ define('CRYPT_HASH_MODE_HASH',     3);
 /**
  * Pure-PHP implementations of keyed-hash message authentication codes (HMACs) and various cryptographic hashing functions.
  *
- * @package Crypt_Hash
+ * @package CryptHash
  * @author  Jim Wigginton <terrafrost@php.net>
  * @access  public
  */
-class Crypt_Hash
+class CryptHash
 {
     /**
      * Hash Parameter
      *
-     * @see Crypt_Hash::setHash()
+     * @see CryptHash::setHash()
      * @var Integer
      * @access private
      */
@@ -93,7 +93,7 @@ class Crypt_Hash
     /**
      * Byte-length of compression blocks / key (Internal HMAC)
      *
-     * @see Crypt_Hash::setAlgorithm()
+     * @see CryptHash::setAlgorithm()
      * @var Integer
      * @access private
      */
@@ -102,7 +102,7 @@ class Crypt_Hash
     /**
      * Byte-length of hash output (Internal HMAC)
      *
-     * @see Crypt_Hash::setHash()
+     * @see CryptHash::setHash()
      * @var Integer
      * @access private
      */
@@ -111,7 +111,7 @@ class Crypt_Hash
     /**
      * Hash Algorithm
      *
-     * @see Crypt_Hash::setHash()
+     * @see CryptHash::setHash()
      * @var String
      * @access private
      */
@@ -120,7 +120,7 @@ class Crypt_Hash
     /**
      * Key
      *
-     * @see Crypt_Hash::setKey()
+     * @see CryptHash::setKey()
      * @var String
      * @access private
      */
@@ -129,7 +129,7 @@ class Crypt_Hash
     /**
      * Outer XOR (Internal HMAC)
      *
-     * @see Crypt_Hash::setKey()
+     * @see CryptHash::setKey()
      * @var String
      * @access private
      */
@@ -138,7 +138,7 @@ class Crypt_Hash
     /**
      * Inner XOR (Internal HMAC)
      *
-     * @see Crypt_Hash::setKey()
+     * @see CryptHash::setKey()
      * @var String
      * @access private
      */
@@ -148,10 +148,10 @@ class Crypt_Hash
      * Default Constructor.
      *
      * @param optional String $hash
-     * @return Crypt_Hash
+     * @return CryptHash
      * @access public
      */
-    function Crypt_Hash($hash = 'sha1')
+    function CryptHash($hash = 'sha1')
     {
         if ( !defined('CRYPT_HASH_MODE') ) {
             switch (true) {
@@ -741,7 +741,7 @@ class Crypt_Hash
         }
 
         // Produce the final hash value (big-endian)
-        // (Crypt_Hash::hash() trims the output for hashes but not for HMACs.  as such, we trim the output here)
+        // (CryptHash::hash() trims the output for hashes but not for HMACs.  as such, we trim the output here)
         $temp = $hash[0]->toBytes() . $hash[1]->toBytes() . $hash[2]->toBytes() . $hash[3]->toBytes() .
                 $hash[4]->toBytes() . $hash[5]->toBytes();
         if ($this->l != 48) {

@@ -78,3 +78,4 @@ abstract class AbstractKeyPair extends AbstractKey {
         return $this->secretKey;
     }
 }
+?>

@@ -1,5 +1,7 @@
 <?php
 namespace BrowserID\Algs;
+use BrowserID\Crypt;
+use BrowserID\Math;
 /**
  * RSA-SHA Hashing Interface
  *
@@ -29,16 +31,6 @@ namespace BrowserID\Algs;
  * @copyright  Alien-Scripts.de Benjamin Krämer
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  */
-
-/**
- * Include Crypt_RSA
- */
-require_once(BROWSERID_BASE_PATH."lib/Crypt/RSA.php");
-
-/**
- * Include BigInteger
- */
-require_once(BROWSERID_BASE_PATH."lib/Math/BigInteger.php");
 
 /**
  * RSA key pair
@@ -78,7 +70,7 @@ class RSAKeyPair extends AbstractKeyPair {
      * RSA instance
      *
      * @access private
-     * @var Crypt_RSA
+     * @var CryptRSA
      */
     private $rsa;
 
@@ -134,7 +126,7 @@ class RSAKeyPair extends AbstractKeyPair {
             throw new NoSuchAlgorithmException("keysize not supported");
 
         $instance = new RSAKeyPair();
-        $instance->rsa = new Crypt_RSA();
+        $instance->rsa = new CryptRSA();
 
 
 
@@ -169,164 +161,5 @@ class RSAKeyPair extends AbstractKeyPair {
     }
 }
 
-/**
- * RSA public key
- *
- * A public key using the RSA algorithm.
- *
- * @package     Algs
- * @subpackage  RS
- * @author      Benjamin Krämer <benjamin.kraemer@alien-scripts.de>
- * @version     1.0.0
- */
-class RSAPublicKey extends AbstractPublicKey {
 
-    /**
-     * RSA instance
-     *
-     * @access private
-     * @var Crypt_RSA
-     */
-    private $rsa;
-
-    /**
-     * Constructor
-     *
-     * @access public
-     * @param string $key Public key in PKCS#1 or raw format
-     * @param type $keysize
-     */
-    public function __construct($key = null, $keysize = null)
-    {
-        $this->rsa = new Crypt_RSA();
-        $this->rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
-        if ($key != null)
-        {
-            $this->rsa->loadKey($key);
-            $this->rsa->setPublicKey($key);
-            if ($keysize != null)
-            {
-                $this->rsa->setHash(RSAKeyPair::$KEYSIZES[$keysize]["hashAlg"]);
-                $this->keysize = $keysize;
-            }
-        }
-    }
-
-    /**
-     * @see AbstractKeyInstance::deserializeFromObject($obj)
-     */
-    protected function deserializeFromObject($obj)
-    {
-        $n = new Math_BigInteger($obj["n"]);
-        $e = new Math_BigInteger($obj["e"]);
-        $array = array(
-            "n" => $n,
-            "e" => $e
-        );
-        $this->rsa->loadKey($array, CRYPT_RSA_PUBLIC_FORMAT_RAW);
-        $this->rsa->setPublicKey($array, CRYPT_RSA_PUBLIC_FORMAT_RAW);
-        $this->keysize = RSAKeyPair::_getKeySizeFromRSAKeySize(strlen($n->toBits()));
-        $this->rsa->setHash(RSAKeyPair::$KEYSIZES[$this->keysize]["hashAlg"]);
-        return $this;
-    }
-
-    /**
-     * @see AbstractKeyInstance::serializeToObject($obj)
-     */
-    protected function serializeToObject(&$obj){
-        $key = $this->rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
-        $obj["n"] = $key["n"]->toString();
-        $obj["e"] = $key["e"]->toString();
-    }
-
-    /**
-     * @see AbstractPublicKey::verify($message, $signature)
-     */
-    public function verify($message, $signature)
-    {
-        return $this->rsa->verify($message, $signature);
-    }
-}
-
-/**
- * RSA secret key
- *
- * A secret key using the RSA algorithm.
- *
- * @package     Algs
- * @subpackage  RS
- * @author      Benjamin Krämer <benjamin.kraemer@alien-scripts.de>
- * @version     1.0.0
- */
-class RSASecretKey extends AbstractSecretKey {
-
-    /**
-     * RSA instance
-     *
-     * @access private
-     * @var Crypt_RSA
-     */
-    private $rsa;
-
-    /**
-     * Constructor
-     *
-     * @access public
-     * @param string $key Secret key in PKCS#1 or raw format
-     * @param type $keysize
-     */
-    public function __construct($key = null, $keysize = null)
-    {
-        $this->rsa = new Crypt_RSA();
-        $this->rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
-        if ($key != null)
-        {
-            $this->rsa->loadKey($key);
-            $this->rsa->setPrivateKey($key);
-            if ($keysize != null)
-            {
-                $this->rsa->setHash(RSAKeyPair::$KEYSIZES[$keysize]["hashAlg"]);
-                $this->keysize = $keysize;
-            }
-        }
-    }
-
-    /**
-     * @see AbstractKeyInstance::deserializeFromObject($obj)
-     */
-    protected function deserializeFromObject($obj)
-    {
-        $n = new Math_BigInteger($obj["n"]);
-        $e = new Math_BigInteger($obj["e"]);
-        $d = new Math_BigInteger($obj["d"]);
-        $array = array(
-            "n" => $n,
-            "e" => $e,
-            "d" => $d
-        );
-        $this->rsa->loadKey($array, CRYPT_RSA_PUBLIC_FORMAT_RAW);
-        $this->rsa->setPrivateKey($array, CRYPT_RSA_PUBLIC_FORMAT_RAW);
-        $this->keysize = RSAKeyPair::_getKeySizeFromRSAKeySize(strlen($n->toBits()));
-        $this->rsa->setHash(RSAKeyPair::$KEYSIZES[$this->keysize]["hashAlg"]);
-        return $this;
-    }
-
-    /**
-     * @see AbstractKeyInstance::serializeToObject($obj)
-     */
-    protected function serializeToObject(&$obj){
-        $key = $this->rsa->getPrivateKey();
-        $obj["n"] = $key["n"]->toString();
-        $obj["e"] = $key["e"]->toString();
-        $obj["d"] = $key["d"]->toString();
-    }
-
-    /**
-     * @see AbstractSecretKey::sign($message)
-     */
-    public function sign($message)
-    {
-        return $this->rsa->sign($message);
-    }
-}
 ?>

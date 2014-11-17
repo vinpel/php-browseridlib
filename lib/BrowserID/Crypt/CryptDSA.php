@@ -1,28 +1,29 @@
 <?php
+namespace BrowserID\Crypt;
 /**
- * Crypt_DSA
- * 
- * Crypt_DSA - DSA signature verification and signing library
+ * CryptDSA
+ *
+ * CryptDSA - DSA signature verification and signing library
  *
  * LICENSE:
  *
  * Copyright (c) 2004-2006, TSURUOKA Naoya
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  *   - Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer. 
+ *     notice, this list of conditions and the following disclaimer.
  *   - Redistributions in binary form must reproduce the above
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
- *     with the distribution. 
+ *     with the distribution.
  *   - Neither the name of the author nor the names of its contributors
  *     may be used to endorse or promote products derived from this
- *     software without specific prior written permission. 
- * 
+ *     software without specific prior written permission.
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,7 +37,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * @package     Crypt
- * @subpackage  Crypt_DSA
+ * @subpackage  CryptDSA
  * @author      TSURUOKA Naoya <tsuruoka@labs.cybozu.co.jp>
  * @author      Benjamin Krämer <benjamin.kraemer@alien-scripts.de>
  * @copyright   2006 TSURUOKA Naoya
@@ -46,30 +47,15 @@
  */
 
 /**
- * Include Math_BigInteger
- */
-require_once(BROWSERID_BASE_PATH.'lib/Math/BigInteger.php');
-
-/**
- * Include Crypt_Random
- */
-require_once(BROWSERID_BASE_PATH.'lib/Crypt/Random.php');
-
-/**
- * Include Crypt_Hash
- */
-require_once(BROWSERID_BASE_PATH.'lib/Crypt/Hash.php');
-
-/**
- * Crypt_DSA
+ * CryptDSA
  *
  * @package     Crypt
- * @subpackage  Crypt_DSA
+ * @subpackage  CryptDSA
  * @author      TSURUOKA Naoya <tsuruoka@labs.cybozu.co.jp>
  * @author      Benjamin Krämer <benjamin.kraemer@alien-scripts.de>
  * @version     0.0.4
  */
-class Crypt_DSA
+class CryptDSA
 {
     /**
      * Version of this package
@@ -116,12 +102,12 @@ class Crypt_DSA
     {
         return new Math_BigInteger($x, 256);
     }
-    
+
     /**
      * Generate modulated number
-     * 
+     *
      * Generates a number that lies between 0 and q-1
-     * 
+     *
      * @access public
      * @static
      * @staticvar Math_BigInteger $one Constant one
@@ -136,7 +122,7 @@ class Crypt_DSA
         static $one;
         if (!isset($one))
             $one = new Math_BigInteger(1);
-        
+
         $c = self::_os2ip(self::_random(strlen($q->toBytes()) + 8));
         $result_base = $c->divide($q->subtract($one));
         return $result_base[1]->add($one);
@@ -144,7 +130,7 @@ class Crypt_DSA
 
     /**
      * DSA keypair creation
-     * 
+     *
      * @param Math_BigInteger $p p
      * @param Math_BigInteger $q q
      * @param Math_BigInteger $g g
@@ -152,11 +138,11 @@ class Crypt_DSA
      */
     static public function generate($p, $q, $g)
     {
-        $hash = new Crypt_Hash($hash_alg);
-        
+        $hash = new CryptHash($hash_alg);
+
         $x = self::randomNumberMod($q);
         $y = $g->modPow($x, $p);
-        
+
         return array(
             "x" => $x,
             "y" => $y
@@ -165,7 +151,7 @@ class Crypt_DSA
 
     /**
      * DSA sign
-     * 
+     *
      * @param string $message message
      * @param string $hash_alg hash algorithm
      * @param Math_BigInteger $p p
@@ -176,18 +162,18 @@ class Crypt_DSA
      */
     static public function sign($message, $hash_alg, $p, $q, $g, $x)
     {
-        $hash = new Crypt_Hash($hash_alg);
-        
+        $hash = new CryptHash($hash_alg);
+
         static $zero;
         if (!isset($zero))
             $zero = new Math_BigInteger();
-        
+
         while (true)
         {
             $k = self::randomNumberMod($q);
             $r_base = $g->modPow($k, $p)->divide($q);
             $r = $r_base[1];
-            
+
             if ($r->compare($zero) == 0)
             {
                 //console.log("oops r is zero");
@@ -208,7 +194,7 @@ class Crypt_DSA
             $k_modInv_mul = $k_modInv->multiply($message_dep);
             $s_base = $k_modInv_mul->divide($q);
             $s = $s_base[1];
-            
+
             if ($s->compare($zero) == 0)
             {
                 //console.log("oops s is zero");
@@ -217,7 +203,7 @@ class Crypt_DSA
             // r and s are non-zero, we can continue
             break;
         }
-        
+
         // format the signature, it's r and s
         return array(
             "r" => $r,
@@ -227,7 +213,7 @@ class Crypt_DSA
 
     /**
      * DSA verify
-     * 
+     *
      * @param string $message message
      * @param string $hash_alg hash algorithm
      * @param Math_BigInteger $r r
@@ -240,9 +226,9 @@ class Crypt_DSA
      */
     static public function verify($message, $hash_alg, $r, $s, $p, $q, $g, $y)
     {
-        $hash = new Crypt_Hash($hash_alg);
+        $hash = new CryptHash($hash_alg);
         $hash_m = new Math_BigInteger($hash->hash($message), 256);
-        
+
         $w      = $s->modInverse($q);
 
         $hash_m_mul = $hash_m->multiply($w);

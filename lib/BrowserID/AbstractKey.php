@@ -42,3 +42,4 @@ abstract class AbstractKey {
         return $this->algorithm . $this->keysize;
     }
 }
+?>

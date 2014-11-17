@@ -1,4 +1,5 @@
 <?php
+namespace BrowserID\Crypt;
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
@@ -13,7 +14,7 @@
  * <?php
  *    include('Crypt/TripleDES.php');
  *
- *    $des = new Crypt_TripleDES();
+ *    $des = new CryptTripleDES();
  *
  *    $des->setKey('abcdefghijklmnopqrstuvwx');
  *
@@ -33,10 +34,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -46,20 +47,13 @@
  * THE SOFTWARE.
  *
  * @package    Crypt
- * @subpackage Crypt_TripleDES
+ * @subpackage CryptTripleDES
  * @author     Jim Wigginton <terrafrost@php.net>
  * @copyright  MMVII Jim Wigginton
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @version    $Id: TripleDES.php,v 1.13 2010/02/26 03:40:25 terrafrost Exp $
  * @link       http://phpseclib.sourceforge.net
  */
-
-/**
- * Include Crypt_DES
- */
-if (!class_exists('Crypt_DES')) {
-    require_once(BROWSERID_BASE_PATH.'lib/Crypt/DES.php');
-}
 
 /**
  * Encrypt / decrypt using inner chaining
@@ -82,13 +76,13 @@ define('CRYPT_DES_MODE_CBC3', CRYPT_DES_MODE_CBC);
  * @version    0.1.0
  * @access     public
  * @package    Crypt
- * @subpackage Crypt_TripleDES
+ * @subpackage CryptTripleDES
  */
-class Crypt_TripleDES {
+class CryptTripleDES {
     /**
      * The Three Keys
      *
-     * @see Crypt_TripleDES::setKey()
+     * @see CryptTripleDES::setKey()
      * @var String
      * @access private
      */
@@ -97,7 +91,7 @@ class Crypt_TripleDES {
     /**
      * The Encryption Mode
      *
-     * @see Crypt_TripleDES::Crypt_TripleDES()
+     * @see CryptTripleDES::CryptTripleDES()
      * @var Integer
      * @access private
      */
@@ -106,7 +100,7 @@ class Crypt_TripleDES {
     /**
      * Continuous Buffer status
      *
-     * @see Crypt_TripleDES::enableContinuousBuffer()
+     * @see CryptTripleDES::enableContinuousBuffer()
      * @var Boolean
      * @access private
      */
@@ -115,7 +109,7 @@ class Crypt_TripleDES {
     /**
      * Padding status
      *
-     * @see Crypt_TripleDES::enablePadding()
+     * @see CryptTripleDES::enablePadding()
      * @var Boolean
      * @access private
      */
@@ -124,7 +118,7 @@ class Crypt_TripleDES {
     /**
      * The Initialization Vector
      *
-     * @see Crypt_TripleDES::setIV()
+     * @see CryptTripleDES::setIV()
      * @var String
      * @access private
      */
@@ -133,7 +127,7 @@ class Crypt_TripleDES {
     /**
      * A "sliding" Initialization Vector
      *
-     * @see Crypt_TripleDES::enableContinuousBuffer()
+     * @see CryptTripleDES::enableContinuousBuffer()
      * @var String
      * @access private
      */
@@ -142,7 +136,7 @@ class Crypt_TripleDES {
     /**
      * A "sliding" Initialization Vector
      *
-     * @see Crypt_TripleDES::enableContinuousBuffer()
+     * @see CryptTripleDES::enableContinuousBuffer()
      * @var String
      * @access private
      */
@@ -162,7 +156,7 @@ class Crypt_TripleDES {
      * The mcrypt resource can be recreated every time something needs to be created or it can be created just once.
      * Since mcrypt operates in continuous mode, by default, it'll need to be recreated when in non-continuous mode.
      *
-     * @see Crypt_TripleDES::encrypt()
+     * @see CryptTripleDES::encrypt()
      * @var String
      * @access private
      */
@@ -174,7 +168,7 @@ class Crypt_TripleDES {
      * The mcrypt resource can be recreated every time something needs to be created or it can be created just once.
      * Since mcrypt operates in continuous mode, by default, it'll need to be recreated when in non-continuous mode.
      *
-     * @see Crypt_TripleDES::decrypt()
+     * @see CryptTripleDES::decrypt()
      * @var String
      * @access private
      */
@@ -183,8 +177,8 @@ class Crypt_TripleDES {
     /**
      * Does the enmcrypt resource need to be (re)initialized?
      *
-     * @see Crypt_TripleDES::setKey()
-     * @see Crypt_TripleDES::setIV()
+     * @see CryptTripleDES::setKey()
+     * @see CryptTripleDES::setIV()
      * @var Boolean
      * @access private
      */
@@ -193,8 +187,8 @@ class Crypt_TripleDES {
     /**
      * Does the demcrypt resource need to be (re)initialized?
      *
-     * @see Crypt_TripleDES::setKey()
-     * @see Crypt_TripleDES::setIV()
+     * @see CryptTripleDES::setKey()
+     * @see CryptTripleDES::setIV()
      * @var Boolean
      * @access private
      */
@@ -203,7 +197,7 @@ class Crypt_TripleDES {
     /**
      * Is the mode one that is paddable?
      *
-     * @see Crypt_TripleDES::Crypt_TripleDES()
+     * @see CryptTripleDES::CryptTripleDES()
      * @var Boolean
      * @access private
      */
@@ -212,7 +206,7 @@ class Crypt_TripleDES {
     /**
      * Encryption buffer for CTR, OFB and CFB modes
      *
-     * @see Crypt_TripleDES::encrypt()
+     * @see CryptTripleDES::encrypt()
      * @var String
      * @access private
      */
@@ -221,7 +215,7 @@ class Crypt_TripleDES {
     /**
      * Decryption buffer for CTR, OFB and CFB modes
      *
-     * @see Crypt_TripleDES::decrypt()
+     * @see CryptTripleDES::decrypt()
      * @var String
      * @access private
      */
@@ -230,8 +224,8 @@ class Crypt_TripleDES {
     /**
      * mcrypt resource for CFB mode
      *
-     * @see Crypt_TripleDES::encrypt()
-     * @see Crypt_TripleDES::decrypt()
+     * @see CryptTripleDES::encrypt()
+     * @see CryptTripleDES::decrypt()
      * @var String
      * @access private
      */
@@ -244,10 +238,10 @@ class Crypt_TripleDES {
      * CRYPT_DES_MODE_ECB or CRYPT_DES_MODE_CBC.  If not explictly set, CRYPT_DES_MODE_CBC will be used.
      *
      * @param optional Integer $mode
-     * @return Crypt_TripleDES
+     * @return CryptTripleDES
      * @access public
      */
-    function Crypt_TripleDES($mode = CRYPT_DES_MODE_CBC)
+    function CryptTripleDES($mode = CRYPT_DES_MODE_CBC)
     {
         if ( !defined('CRYPT_DES_MODE') ) {
             switch (true) {
@@ -262,9 +256,9 @@ class Crypt_TripleDES {
         if ( $mode == CRYPT_DES_MODE_3CBC ) {
             $this->mode = CRYPT_DES_MODE_3CBC;
             $this->des = array(
-                new Crypt_DES(CRYPT_DES_MODE_CBC),
-                new Crypt_DES(CRYPT_DES_MODE_CBC),
-                new Crypt_DES(CRYPT_DES_MODE_CBC)
+                new CryptDES(CRYPT_DES_MODE_CBC),
+                new CryptDES(CRYPT_DES_MODE_CBC),
+                new CryptDES(CRYPT_DES_MODE_CBC)
             );
             $this->paddable = true;
 
@@ -301,11 +295,11 @@ class Crypt_TripleDES {
                 break;
             default:
                 $this->des = array(
-                    new Crypt_DES(CRYPT_DES_MODE_ECB),
-                    new Crypt_DES(CRYPT_DES_MODE_ECB),
-                    new Crypt_DES(CRYPT_DES_MODE_ECB)
+                    new CryptDES(CRYPT_DES_MODE_ECB),
+                    new CryptDES(CRYPT_DES_MODE_ECB),
+                    new CryptDES(CRYPT_DES_MODE_ECB)
                 );
- 
+
                 // we're going to be doing the padding, ourselves, so disable it in the Crypt_DES objects
                 $this->des[0]->disablePadding();
                 $this->des[1]->disablePadding();
@@ -395,13 +389,9 @@ class Crypt_TripleDES {
                     $count = 1000;
                 }
 
-                if (!class_exists('Crypt_Hash')) {
-                    require_once(BROWSERID_BASE_PATH.'lib/Crypt/Hash.php');
-                }
-
                 $i = 1;
                 while (strlen($key) < 24) { // $dkLen == 24
-                    $hmac = new Crypt_Hash();
+                    $hmac = new CryptHash();
                     $hmac->setHash($hash);
                     $hmac->setKey($password);
                     $f = $u = $hmac->hash($salt . pack('N', $i++));
@@ -442,8 +432,8 @@ class Crypt_TripleDES {
      * Encrypt the output of this and XOR it against the ciphertext / plaintext to get the
      * plaintext / ciphertext in CTR mode.
      *
-     * @see Crypt_TripleDES::decrypt()
-     * @see Crypt_TripleDES::encrypt()
+     * @see CryptTripleDES::decrypt()
+     * @see CryptTripleDES::encrypt()
      * @access private
      * @param Integer $length
      * @param String $iv
@@ -561,9 +551,9 @@ class Crypt_TripleDES {
             case CRYPT_DES_MODE_ECB:
                 for ($i = 0; $i < strlen($plaintext); $i+=8) {
                     $block = substr($plaintext, $i, 8);
-                    // all of these _processBlock calls could, in theory, be put in a function - say Crypt_TripleDES::_ede_encrypt() or something.
+                    // all of these _processBlock calls could, in theory, be put in a function - say CryptTripleDES::_ede_encrypt() or something.
                     // only problem with that: it would slow encryption and decryption down.  $this->des would have to be called every time that
-                    // function is called, instead of once for the whole string of text that's being encrypted, which would, in turn, make 
+                    // function is called, instead of once for the whole string of text that's being encrypted, which would, in turn, make
                     // encryption and decryption take more time, per this:
                     //
                     // http://blog.libssh2.org/index.php?/archives/21-Compiled-Variables.html
@@ -918,12 +908,12 @@ class Crypt_TripleDES {
      * outputs.  The reason is due to the fact that the initialization vector's change after every encryption /
      * decryption round when the continuous buffer is enabled.  When it's disabled, they remain constant.
      *
-     * Put another way, when the continuous buffer is enabled, the state of the Crypt_DES() object changes after each
+     * Put another way, when the continuous buffer is enabled, the state of the CryptDES() object changes after each
      * encryption / decryption round, whereas otherwise, it'd remain constant.  For this reason, it's recommended that
      * continuous buffers not be used.  They do offer better security and are, in fact, sometimes required (SSH uses them),
      * however, they are also less intuitive and more likely to cause you problems.
      *
-     * @see Crypt_TripleDES::disableContinuousBuffer()
+     * @see CryptTripleDES::disableContinuousBuffer()
      * @access public
      */
     function enableContinuousBuffer()
@@ -941,7 +931,7 @@ class Crypt_TripleDES {
      *
      * The default behavior.
      *
-     * @see Crypt_TripleDES::enableContinuousBuffer()
+     * @see CryptTripleDES::enableContinuousBuffer()
      * @access public
      */
     function disableContinuousBuffer()
@@ -968,7 +958,7 @@ class Crypt_TripleDES {
      * away characters that shouldn't be stripped away. (SSH knows how many bytes are added because the length is
      * transmitted separately)
      *
-     * @see Crypt_TripleDES::disablePadding()
+     * @see CryptTripleDES::disablePadding()
      * @access public
      */
     function enablePadding()
@@ -979,7 +969,7 @@ class Crypt_TripleDES {
     /**
      * Do not pad packets.
      *
-     * @see Crypt_TripleDES::enablePadding()
+     * @see CryptTripleDES::enablePadding()
      * @access public
      */
     function disablePadding()
@@ -996,7 +986,7 @@ class Crypt_TripleDES {
      * If padding is disabled and $text is not a multiple of the blocksize, the string will be padded regardless
      * and padding will, hence forth, be enabled.
      *
-     * @see Crypt_TripleDES::_unpad()
+     * @see CryptTripleDES::_unpad()
      * @access private
      */
     function _pad($text)
@@ -1022,7 +1012,7 @@ class Crypt_TripleDES {
      * If padding is enabled and the reported padding length is invalid the encryption key will be assumed to be wrong
      * and false will be returned.
      *
-     * @see Crypt_TripleDES::_pad()
+     * @see CryptTripleDES::_pad()
      * @access private
      */
     function _unpad($text)

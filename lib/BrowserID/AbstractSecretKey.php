@@ -15,7 +15,7 @@ namespace BrowserID;
   * Include Algorithms
   */
  require_once("./lib/BrowserID/algs.php");
- 
+
 abstract class AbstractSecretKey extends AbstractKeyInstance {
     /**
      * Sign message
@@ -65,3 +65,4 @@ abstract class AbstractSecretKey extends AbstractKeyInstance {
         return AbstractSecretKey::fromSimpleObject(json_decode($str, true));
     }
 }
+?>

@@ -1,4 +1,5 @@
 <?php
+namespace BrowserID\Crypt;
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
@@ -21,7 +22,7 @@
  * <?php
  *    include('Crypt/RC4.php');
  *
- *    $rc4 = new Crypt_RC4();
+ *    $rc4 = new CryptRC4();
  *
  *    $rc4->setKey('abcdefgh');
  *
@@ -41,10 +42,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -54,7 +55,7 @@
  * THE SOFTWARE.
  *
  * @category   Crypt
- * @package    Crypt_RC4
+ * @package    CryptRC4
  * @author     Jim Wigginton <terrafrost@php.net>
  * @copyright  MMVII Jim Wigginton
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
@@ -64,7 +65,7 @@
 
 /**#@+
  * @access private
- * @see Crypt_RC4::Crypt_RC4()
+ * @see CryptRC4::CryptRC4()
  */
 /**
  * Toggles the internal implementation
@@ -78,7 +79,7 @@ define('CRYPT_RC4_MODE_MCRYPT', 2);
 
 /**#@+
  * @access private
- * @see Crypt_RC4::_crypt()
+ * @see CryptRC4::_crypt()
  */
 define('CRYPT_RC4_ENCRYPT', 0);
 define('CRYPT_RC4_DECRYPT', 1);
@@ -90,13 +91,13 @@ define('CRYPT_RC4_DECRYPT', 1);
  * @author  Jim Wigginton <terrafrost@php.net>
  * @version 0.1.0
  * @access  public
- * @package Crypt_RC4
+ * @package CryptRC4
  */
-class Crypt_RC4 {
+class CryptRC4 {
     /**
      * The Key
      *
-     * @see Crypt_RC4::setKey()
+     * @see CryptRC4::setKey()
      * @var String
      * @access private
      */
@@ -107,7 +108,7 @@ class Crypt_RC4 {
      *
      * If CRYPT_RC4_MODE == CRYPT_RC4_MODE_MCRYPT, this will be equal to the mcrypt object
      *
-     * @see Crypt_RC4::setKey()
+     * @see CryptRC4::setKey()
      * @var Array
      * @access private
      */
@@ -118,7 +119,7 @@ class Crypt_RC4 {
      *
      * If CRYPT_RC4_MODE == CRYPT_RC4_MODE_MCRYPT, this will be equal to the mcrypt object
      *
-     * @see Crypt_RC4::setKey()
+     * @see CryptRC4::setKey()
      * @var Array
      * @access private
      */
@@ -127,7 +128,7 @@ class Crypt_RC4 {
     /**
      * The $i and $j indexes for encryption
      *
-     * @see Crypt_RC4::_crypt()
+     * @see CryptRC4::_crypt()
      * @var Integer
      * @access private
      */
@@ -136,7 +137,7 @@ class Crypt_RC4 {
     /**
      * The $i and $j indexes for decryption
      *
-     * @see Crypt_RC4::_crypt()
+     * @see CryptRC4::_crypt()
      * @var Integer
      * @access private
      */
@@ -147,7 +148,7 @@ class Crypt_RC4 {
      *
      * Only used if CRYPT_RC4_MODE == CRYPT_RC4_MODE_MCRYPT.  Only possible values are MCRYPT_RC4 or MCRYPT_ARCFOUR.
      *
-     * @see Crypt_RC4::Crypt_RC4()
+     * @see CryptRC4::CryptRC4()
      * @var Integer
      * @access private
      */
@@ -156,7 +157,7 @@ class Crypt_RC4 {
     /**
      * Continuous Buffer status
      *
-     * @see Crypt_RC4::enableContinuousBuffer()
+     * @see CryptRC4::enableContinuousBuffer()
      * @var Boolean
      * @access private
      */
@@ -168,10 +169,10 @@ class Crypt_RC4 {
      * Determines whether or not the mcrypt extension should be used.
      *
      * @param optional Integer $mode
-     * @return Crypt_RC4
+     * @return CryptRC4
      * @access public
      */
-    function Crypt_RC4()
+    function CryptRC4()
     {
         if ( !defined('CRYPT_RC4_MODE') ) {
             switch (true) {
@@ -263,14 +264,11 @@ class Crypt_RC4 {
                     $dkLen = 128;
                 }
 
-                if (!class_exists('Crypt_Hash')) {
-                    require_once('Crypt/Hash.php');
-                }
 
                 $i = 1;
                 while (strlen($key) < $dkLen) {
                     //$dk.= $this->_pbkdf($password, $salt, $count, $i++);
-                    $hmac = new Crypt_Hash();
+                    $hmac = new CryptHash();
                     $hmac->setHash($hash);
                     $hmac->setKey($password);
                     $f = $u = $hmac->hash($salt . pack('N', $i++));
@@ -301,7 +299,7 @@ class Crypt_RC4 {
      * {@link http://en.wikipedia.org/wiki/Related_key_attack http://en.wikipedia.org/wiki/Related_key_attack}
      *
      * @param String $iv
-     * @see Crypt_RC4::setKey()
+     * @see CryptRC4::setKey()
      * @access public
      */
     function setIV($iv)
@@ -311,7 +309,7 @@ class Crypt_RC4 {
     /**
      * Encrypts a message.
      *
-     * @see Crypt_RC4::_crypt()
+     * @see CryptRC4::_crypt()
      * @access public
      * @param String $plaintext
      */
@@ -326,7 +324,7 @@ class Crypt_RC4 {
      * $this->decrypt($this->encrypt($plaintext)) == $this->encrypt($this->encrypt($plaintext)).
      * Atleast if the continuous buffer is disabled.
      *
-     * @see Crypt_RC4::_crypt()
+     * @see CryptRC4::_crypt()
      * @access public
      * @param String $ciphertext
      */
@@ -338,8 +336,8 @@ class Crypt_RC4 {
     /**
      * Encrypts or decrypts a message.
      *
-     * @see Crypt_RC4::encrypt()
-     * @see Crypt_RC4::decrypt()
+     * @see CryptRC4::encrypt()
+     * @see CryptRC4::decrypt()
      * @access private
      * @param String $text
      * @param Integer $mode
@@ -432,12 +430,12 @@ class Crypt_RC4 {
      * outputs.  The reason is due to the fact that the initialization vector's change after every encryption /
      * decryption round when the continuous buffer is enabled.  When it's disabled, they remain constant.
      *
-     * Put another way, when the continuous buffer is enabled, the state of the Crypt_DES() object changes after each
+     * Put another way, when the continuous buffer is enabled, the state of the CryptDES() object changes after each
      * encryption / decryption round, whereas otherwise, it'd remain constant.  For this reason, it's recommended that
      * continuous buffers not be used.  They do offer better security and are, in fact, sometimes required (SSH uses them),
      * however, they are also less intuitive and more likely to cause you problems.
      *
-     * @see Crypt_RC4::disableContinuousBuffer()
+     * @see CryptRC4::disableContinuousBuffer()
      * @access public
      */
     function enableContinuousBuffer()
@@ -450,7 +448,7 @@ class Crypt_RC4 {
      *
      * The default behavior.
      *
-     * @see Crypt_RC4::enableContinuousBuffer()
+     * @see CryptRC4::enableContinuousBuffer()
      * @access public
      */
     function disableContinuousBuffer()
@@ -469,7 +467,7 @@ class Crypt_RC4 {
      * Since RC4 is a stream cipher and not a block cipher, no padding is necessary.  The only reason this function is
      * included is so that you can switch between a block cipher and a stream cipher transparently.
      *
-     * @see Crypt_RC4::disablePadding()
+     * @see CryptRC4::disablePadding()
      * @access public
      */
     function enablePadding()
@@ -479,7 +477,7 @@ class Crypt_RC4 {
     /**
      * Dummy function.
      *
-     * @see Crypt_RC4::enablePadding()
+     * @see CryptRC4::enablePadding()
      * @access public
      */
     function disablePadding()

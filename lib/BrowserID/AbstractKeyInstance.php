@@ -66,3 +66,4 @@ abstract class AbstractKeyInstance extends AbstractKey {
         return json_encode($this->toSimpleObject());
     }
 }
+?>

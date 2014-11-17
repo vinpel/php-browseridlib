@@ -31,7 +31,7 @@ namespace BrowserID;
 /**
  * Include Algorithms
  */
-require_once(BROWSERID_BASE_PATH."lib/BrowserID/algs.php");
+require_once("./lib/BrowserID/algs.php");
 
 
 /**
@@ -259,7 +259,6 @@ class Primary {
 
 		file_put_contents(Primary::$well_know_path.'/index',json_encode(Primary::$g_shim_cache));
 		file_put_contents(Primary::$well_know_path.'/'.base64_encode($origin),$buffer);
-		\myClass\Log::write('updateShimCache '.$domain);
 
 		}
 
@@ -291,7 +290,7 @@ class Primary {
                 "delegates" => $delegates
             );
         }
-		\myClass\Log::write('getWellKnown for  '.$domain);
+
         // TODO: Replace with primary cache here!
 
         $ch = curl_init();

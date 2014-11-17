@@ -16,7 +16,7 @@ namespace BrowserID;
   */
  require_once("./lib/BrowserID/algs.php");
 
- 
+
 abstract class AbstractPublicKey extends AbstractKeyInstance {
     /**
      * Verify message
@@ -67,3 +67,4 @@ abstract class AbstractPublicKey extends AbstractKeyInstance {
         return AbstractPublicKey::fromSimpleObject(json_decode($str, true));
     }
 }
+?>
