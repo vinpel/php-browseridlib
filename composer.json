@@ -1,5 +1,6 @@
 {
   "name": "vinpel/php-browseridlib",
+  "version": "0.0.3.0",
 	"description": "A composer implantation of php-browseridlib",
 
 	"homepage": "https://github.com/vinpel/php-browseridlib",
