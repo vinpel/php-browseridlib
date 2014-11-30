@@ -14,48 +14,49 @@ BrowserID PHP Library
 
 (0) Modification by Vinpel
 -----------
-The project will now be compatible with Composer
+The project will now be compatible with Composer.
 
+user Yii2 Alias @storage/BrowserID
 
 (1) Summary
 -----------
 
-The library offers functions for verifying BrowserID/Persona assertions either directly 
-on the server or using Mozillas fallback verifier. Verifying the assertions directly 
-has the advantage that the assertion is not sent over the internet and to reduce 
+The library offers functions for verifying BrowserID/Persona assertions either directly
+on the server or using Mozillas fallback verifier. Verifying the assertions directly
+has the advantage that the assertion is not sent over the internet and to reduce
 dependencies on others.
 
-Since BrowserID/Persona is highly under developement right now, this libraries local 
-verifier may be out of date the time you use it. Until the protocol get's stable, 
-the usage is only advised for experimental usage. If you want to use BrowserID/Persona 
-in an productional environment, it's recommented to use Mozillas verifier instead of 
+Since BrowserID/Persona is highly under developement right now, this libraries local
+verifier may be out of date the time you use it. Until the protocol get's stable,
+the usage is only advised for experimental usage. If you want to use BrowserID/Persona
+in an productional environment, it's recommented to use Mozillas verifier instead of
 verifying locally.
 
-Using the remote verifier is currently the default mode if the environment is set 
-to "production". To use the local verifier, open the file /lib/browserid.php and 
+Using the remote verifier is currently the default mode if the environment is set
+to "production". To use the local verifier, open the file /lib/browserid.php and
 uncomment the following line:
 
 Configuration::getInstance()->setEnvironment("developement");
 
 !!! THIS IS NOT ADVISED FOR PRODUCTIONAL USE !!!
 
-This will enable all currently configured developement features like the local verifier 
-or shimmed primaries. To get back into the safe production environment, just comment the 
+This will enable all currently configured developement features like the local verifier
+or shimmed primaries. To get back into the safe production environment, just comment the
 line out again.
 
 
 (2) Requirements
 ----------------
 
-This library uses native JSON support and cURL. Therefore you must use a 
+This library uses native JSON support and cURL. Therefore you must use a
 version >= 5.2.0 for it to work. Fallback JSON implementations may follow.
 
 
 (3) Release notes
 -----------------
 
-This library offers the working state as of 2012-10-02. This code uses some 
-ideas as showed at https://github.com/mozilla/browserid/tree/dev/lib and 
+This library offers the working state as of 2012-10-02. This code uses some
+ideas as showed at https://github.com/mozilla/browserid/tree/dev/lib and
 https://github.com/mozilla/jwcrypto and ported them for PHP.
 
 
@@ -75,29 +76,29 @@ if ($response["status"] == "okay") {
 }
 ==============================================================
 
-For more usage examples see the examples folder. Please configure the file 
+For more usage examples see the examples folder. Please configure the file
 lib/BrowserID/configuration.php before testing (especially hostname and base_path)
 
 - examples/createKeys.php
-    The library is offering some functions for helping to implement identity 
-    providers. This example shows how to create and save a key pair later used 
-    for signing identity certificates. The created certificates will be saved as 
-    var/root.cert (public key) and var/root.secretkey. To obtain these keys for 
+    The library is offering some functions for helping to implement identity
+    providers. This example shows how to create and save a key pair later used
+    for signing identity certificates. The created certificates will be saved as
+    var/root.cert (public key) and var/root.secretkey. To obtain these keys for
     signing, you can call Secrets::loadPublicKey() and Secrets::loadSecretKey().
 
 - examples/createBundle.php
     This example creates an bundled assertion, just like the browser would do.
-    The variables $publicKeyIdentity and $secretKeyIdentity contain the keys that 
+    The variables $publicKeyIdentity and $secretKeyIdentity contain the keys that
     normally would be created by the browser.
 
-    CertAssertion::createAssertion() creates the assertion claim and signs it with 
-    the users identity certificate ($secretKeyIdentity). The public key of the 
-    identity certificate will be signed by calling CertAssertion::createIdentityCert() 
-    acting like a identity provider would do while provisioning using the public 
+    CertAssertion::createAssertion() creates the assertion claim and signs it with
+    the users identity certificate ($secretKeyIdentity). The public key of the
+    identity certificate will be signed by calling CertAssertion::createIdentityCert()
+    acting like a identity provider would do while provisioning using the public
     key stored in Secrets::loadPublicKey().
 
 NOTICE:
-If you only want to use the remote verifier on your server, you only have to upload 
+If you only want to use the remote verifier on your server, you only have to upload
 the following files without configuring anything:
     - verify.php
     - lib/browserid.php
@@ -143,7 +144,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 Some more data checking of fields needed before accessing them and adding IdP Proxies.
 
-Implement public key cache. First try it with authenticating using the cached public 
-key, if this fails, try it with fetching the well-known public key. The cache should 
-also expire the keys since it is possible that the public key of a provider may change 
+Implement public key cache. First try it with authenticating using the cached public
+key, if this fails, try it with fetching the well-known public key. The cache should
+also expire the keys since it is possible that the public key of a provider may change
 in case it is compromised.

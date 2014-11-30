@@ -151,7 +151,7 @@ class CryptHash
      * @return CryptHash
      * @access public
      */
-    function CryptHash($hash = 'sha1')
+    function __construct($hash = 'sha1')
     {
         if ( !defined('CRYPT_HASH_MODE') ) {
             switch (true) {

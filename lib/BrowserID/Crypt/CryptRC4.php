@@ -172,7 +172,7 @@ class CryptRC4 {
      * @return CryptRC4
      * @access public
      */
-    function CryptRC4()
+    function __construct()
     {
         if ( !defined('CRYPT_RC4_MODE') ) {
             switch (true) {

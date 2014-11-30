@@ -211,7 +211,7 @@ class Assertion {
         // check iat
         if ($this->issuedAt != null) {
             if ($this->issuedAt > $now)
-                throw new Exception("assertion issued later than verification date");
+                throw new \Exception("assertion issued later than verification date");
         }
 
         // check exp expiration
@@ -219,7 +219,7 @@ class Assertion {
 
         if ($this->expiresAt != null) {
             if ($this->expiresAt < $now)
-                throw new Exception("assertion has expired");
+                throw new \Exception("assertion has expired");
         }
 
         return true;

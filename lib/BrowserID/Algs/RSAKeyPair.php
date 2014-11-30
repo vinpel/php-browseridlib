@@ -2,6 +2,7 @@
 namespace BrowserID\Algs;
 use BrowserID\Crypt;
 use BrowserID\Math;
+
 /**
  * RSA-SHA Hashing Interface
  *
@@ -42,7 +43,7 @@ use BrowserID\Math;
  * @author      Benjamin Krämer <benjamin.kraemer@alien-scripts.de>
  * @version     1.0.0
  */
-class RSAKeyPair extends AbstractKeyPair {
+class RSAKeyPair extends \BrowserID\AbstractKeyPair {
 
     /**
      * Allowed keysizes
@@ -91,7 +92,7 @@ class RSAKeyPair extends AbstractKeyPair {
                 return $keysize;
         }
 
-        throw new Exception("bad key");
+        throw new \Exception("bad key");
     }
 
     /**
@@ -127,9 +128,6 @@ class RSAKeyPair extends AbstractKeyPair {
 
         $instance = new RSAKeyPair();
         $instance->rsa = new CryptRSA();
-
-
-
 
         $instance->rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);
         $instance->rsa->setHash(self::$KEYSIZES[$keysize]["hashAlg"]);

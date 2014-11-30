@@ -69,7 +69,8 @@ class Verifier {
      * @param String $audience The audience as valid URL
      * @return array An array containing status okay on success or failure on error
      */
-    public static function verify($assertion, $audience) {
+    public static function Verify($assertion, $audience) {
+
         if (Configuration::getInstance()->get('use_remote_verifier'))
             return Verifier::verifyRemote($assertion, $audience);
         else
@@ -94,15 +95,15 @@ class Verifier {
         /**
          * Include CertAssertion
          */
-        require_once(BROWSERID_BASE_PATH."lib/BrowserID/cert_assertion.php");
-
         try {
             $certassertion = new CertAssertion($assertion, $audience);
             $result = $certassertion->verify();
+
             $certChain = &$result["certChain"];
             // TODO: Contains the additional payload of the assertion, may be added later!
             //$payload = &$result["payload"];
             $assertion = &$result["assertion"];
+
 
             // principal and issuer are in the last cert
             $lastCert = &$certChain[sizeof($certChain) - 1];
@@ -117,7 +118,9 @@ class Verifier {
                 "expires" => $assertion->getExpiresAt(),
                 "issuer" => $issuer
             );
+
             return json_encode($result);
+
         } catch (Exception $e) {
             //console.log($e->getTraceAsString());
             return json_encode(array("status"=>"failure", "reason"=>$e->getMessage()));

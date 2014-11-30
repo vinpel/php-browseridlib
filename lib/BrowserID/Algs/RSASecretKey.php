@@ -2,7 +2,9 @@
 namespace BrowserID\Algs;
 use BrowserID\Crypt;
 use BrowserID\Math;
-
+use BrowserID\AbstractSecretKey;
+use BrowserID\Crypt\CryptRSA;
+use BrowserID\Math\MathBigInteger;
 /**
  * RSA secret key
  *

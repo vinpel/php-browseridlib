@@ -113,6 +113,7 @@ class Secrets {
   static function getPathPublicKey($name = null, $dir = null) {
     $name = Secrets::checkName($name);
     $dir = Secrets::checkDir($dir);
+
     return Utils::path_concat($dir, $name . ".cert");
   }
 
@@ -125,11 +126,11 @@ class Secrets {
   */
   static function readAndParseCert($name = null, $dir = null) {
     $p = Secrets::getPathPublicKey($name, $dir);
+
     $cert = null;
 
     // may throw
     $cert = @file_get_contents($p);
-
     if (!$cert) {
       return null;
     }
@@ -140,7 +141,8 @@ class Secrets {
       // {alg: <ALG>, value: <SERIALIZED_KEY>}
       $payloadSegment = WebToken::parse($cert)->getPayloadSegment();
       return json_decode(Utils::base64url_decode($payloadSegment), true);
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
       return null;
     }
   }
@@ -154,8 +156,10 @@ class Secrets {
   */
   static function loadPublicKey($name = null, $dir = null) {
     $parsedCert = Secrets::readAndParseCert($name, $dir);
-    if (!$parsedCert) return null;
-
+    if (!$parsedCert) {
+      return null;
+    }
+    
     $pkString = $parsedCert["public-key"] ? $parsedCert["public-key"] : $parsedCert["publicKey"];
     return AbstractPublicKey::deserialize(json_encode($pkString));
   }

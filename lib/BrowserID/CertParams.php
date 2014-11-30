@@ -31,7 +31,7 @@ namespace BrowserID;
 /**
  * Include Algorithms
  */
-require_once("./lib/BrowserID/algs.php");
+require_once(__DIR__."/algs.php");
 
 /**
  * Certificate parameters

@@ -173,7 +173,7 @@ class CryptAES extends CryptRijndael {
   * @return CryptAES
   * @access public
   */
-  function CryptAES($mode = CRYPT_AES_MODE_CBC)
+  function __construct($mode = CRYPT_AES_MODE_CBC)
   {
     if ( !defined('CRYPT_AES_MODE') ) {
       switch (true) {

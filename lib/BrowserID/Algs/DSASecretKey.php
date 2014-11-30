@@ -1,8 +1,11 @@
 <?php
 namespace BrowserID\Algs;
 use BrowserID\Crypt;
-use BrowserID\Math;
+use BrowserID\Math\MathBigInteger;
+use BrowserID\AbstractSecretKey;
 
+use BrowserID\Crypt\CryptDSA;
+use BrowserID\Utils;
 /**
  * DSA secret key
  *
@@ -99,7 +102,7 @@ class DSASecretKey extends AbstractSecretKey {
         $hash_alg = $params["hashAlg"];
         $hexlength = $params["q_bitlength"] / 4;
 
-        $keys = Crypt_DSA::sign($message, $hash_alg, $this->key_p, $this->key_q, $this->key_g, $this->key_x);
+        $keys = CryptDSA::sign($message, $hash_alg, $this->key_p, $this->key_q, $this->key_g, $this->key_x);
         $signature = Utils::hex_lpad($keys["r"]->toHex(), $hexlength) . Utils::hex_lpad($keys["s"]->toHex(), $hexlength);
         return pack("H*" , $signature);
     }

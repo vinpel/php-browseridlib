@@ -2,6 +2,12 @@
 namespace BrowserID\Algs;
 use BrowserID\Crypt;
 use BrowserID\Math;
+use BrowserID\AbstractPublicKey;
+use BrowserID\Math\MathBigInteger;
+use BrowserID\Utils;
+
+
+use BrowserID\Crypt\CryptDSA;
 /**
  * DSA public key
  *

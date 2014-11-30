@@ -1,5 +1,6 @@
 <?php
 namespace BrowserID\Crypt;
+use BrowserID\Math\MathBigInteger;
 /**
  * CryptDSA
  *
@@ -55,6 +56,7 @@ namespace BrowserID\Crypt;
  * @author      Benjamin Krämer <benjamin.kraemer@alien-scripts.de>
  * @version     0.0.4
  */
+ require_once(__DIR__.'/function_crypt_random.php');
 class CryptDSA
 {
     /**
@@ -96,11 +98,11 @@ class CryptDSA
      * @access private
      * @static
      * @param String $x
-     * @return Math_BigInteger
+     * @return MathBigInteger
      */
     private static function _os2ip($x)
     {
-        return new Math_BigInteger($x, 256);
+        return new MathBigInteger($x, 256);
     }
 
     /**
@@ -110,9 +112,9 @@ class CryptDSA
      *
      * @access public
      * @static
-     * @staticvar Math_BigInteger $one Constant one
-     * @param Math_BigInteger $q Modulation
-     * @return Math_BigInteger Generated number
+     * @staticvar MathBigInteger $one Constant one
+     * @param MathBigInteger $q Modulation
+     * @return MathBigInteger Generated number
      */
     public static function randomNumberMod($q) {
         // do a few more bits than q so we can wrap around with not too much bias
@@ -121,7 +123,7 @@ class CryptDSA
         // result = (c mod (q-1)) + 1
         static $one;
         if (!isset($one))
-            $one = new Math_BigInteger(1);
+            $one = new MathBigInteger(1);
 
         $c = self::_os2ip(self::_random(strlen($q->toBytes()) + 8));
         $result_base = $c->divide($q->subtract($one));
@@ -131,9 +133,9 @@ class CryptDSA
     /**
      * DSA keypair creation
      *
-     * @param Math_BigInteger $p p
-     * @param Math_BigInteger $q q
-     * @param Math_BigInteger $g g
+     * @param MathBigInteger $p p
+     * @param MathBigInteger $q q
+     * @param MathBigInteger $g g
      * @return array x = private key, y = public key
      */
     static public function generate($p, $q, $g)
@@ -154,10 +156,10 @@ class CryptDSA
      *
      * @param string $message message
      * @param string $hash_alg hash algorithm
-     * @param Math_BigInteger $p p
-     * @param Math_BigInteger $q q
-     * @param Math_BigInteger $g g
-     * @param Math_BigInteger $x private key
+     * @param MathBigInteger $p p
+     * @param MathBigInteger $q q
+     * @param MathBigInteger $g g
+     * @param MathBigInteger $x private key
      * @return array r,s key
      */
     static public function sign($message, $hash_alg, $p, $q, $g, $x)
@@ -166,7 +168,7 @@ class CryptDSA
 
         static $zero;
         if (!isset($zero))
-            $zero = new Math_BigInteger();
+            $zero = new MathBigInteger();
 
         while (true)
         {
@@ -181,7 +183,7 @@ class CryptDSA
             }
 
             // the hash
-            $bigint_hash = new Math_BigInteger($hash->hash($message), 256);
+            $bigint_hash = new MathBigInteger($hash->hash($message), 256);
 
             // compute H(m) + (x*r)
             $x_mul_r_base = $x->multiply($r)->divide($q);
@@ -216,18 +218,18 @@ class CryptDSA
      *
      * @param string $message message
      * @param string $hash_alg hash algorithm
-     * @param Math_BigInteger $r r
-     * @param Math_BigInteger $s s
-     * @param Math_BigInteger $p p
-     * @param Math_BigInteger $q q
-     * @param Math_BigInteger $g g
-     * @param Math_BigInteger $y public key
+     * @param MathBigInteger $r r
+     * @param MathBigInteger $s s
+     * @param MathBigInteger $p p
+     * @param MathBigInteger $q q
+     * @param MathBigInteger $g g
+     * @param MathBigInteger $y public key
      * @return bool
      */
     static public function verify($message, $hash_alg, $r, $s, $p, $q, $g, $y)
     {
         $hash = new CryptHash($hash_alg);
-        $hash_m = new Math_BigInteger($hash->hash($message), 256);
+        $hash_m = new MathBigInteger($hash->hash($message), 256);
 
         $w      = $s->modInverse($q);
 
