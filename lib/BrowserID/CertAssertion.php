@@ -83,7 +83,9 @@ class CertAssertion {
   * @return array The parts, but with filled port field
   */
   private static function normalizeParsedURL($parts) {
-    if (!isset($parts['port'])) $parts['port'] = $parts['scheme'] === 'https:' ? 443 : 80;
+    if (!isset($parts['port'])){
+      $parts['port'] = $parts['scheme'] === 'https:' ? 443 : 80;
+    }
     return $parts;
   }
 
@@ -117,7 +119,7 @@ class CertAssertion {
       else if (strpos($this->audience, ':') !== false) {
         $p = explode(':', $this->audience);
         if (count($p) !== 2)
-        throw new Exception("malformed domain");
+        throw new \Exception("malformed domain");
         $this->audience_domain = $p[0];
         $this->audience_port = $p[1];
       }
@@ -125,16 +127,22 @@ class CertAssertion {
       else {
         $this->audience_domain = $this->audience;
       }
-      if (!isset($this->audience_domain)) throw new Exception("domain mismatch");
+      if (!isset($this->audience_domain)){
+        throw new \Exception("domain mismatch");
+      }
 
       // now parse "want" url
       $want = CertAssertion::normalizeParsedURL(parse_url($want));
-
       // compare the parts explicitly provided by the client
-      if (isset($this->audience_scheme) && $this->audience_scheme != $want['scheme']) throw new Exception("scheme mismatch : ".$want['scheme']);
-      if (isset($this->audience_port) && $this->audience_port != $want['port']) throw new Exception("port mismatch : ".$want['port']);
-      if (isset($this->audience_domain) && $this->audience_domain != $want['host']) throw new Exception("domain mismatch ".$want['host'].' et '.$this->audience_domain);
-
+      if (isset($this->audience_scheme) && $this->audience_scheme != $want['scheme']){
+        throw new \Exception("scheme mismatch : ".$want['scheme']);
+      }
+      if (isset($this->audience_port) && $this->audience_port != $want['port']){
+        throw new \Exception("port mismatch : ".$want['port']);
+      }
+      if (isset($this->audience_domain) && $this->audience_domain != $want['host']){
+        throw new \Exception("domain mismatch ".$want['host'].' et '.$this->audience_domain);
+      }
       return null;
     } catch(Exception $e) {
       return $e->getMessage();
@@ -219,14 +227,16 @@ class CertAssertion {
   public function verify() {
     // assertion is bundle
     $bundle = CertBundle::unbundle($this->assertion);
+
     $result = $bundle->verify(time() * 1000);
     $certChain = &$result["certChain"];
     $payload = &$result["payload"];
     $assertion = &$result["assertion"];
 
     // for now, to be extra safe, we don't allow cert chains
-    if (sizeof($certChain) > 1)
-    throw new Exception("certificate chaining is not yet allowed");
+    if (sizeof($certChain) > 1){
+      throw new \Exception("certificate chaining is not yet allowed");
+    }
 
     // audience must match!
     $err = $this->compareAudiences($assertion->getAudience());
@@ -253,7 +263,7 @@ class CertAssertion {
     {
       $delegated = Primary::delegatesAuthority($domainFromEmail, $issuer);
       if (!$delegated) {
-        throw new Exception("issuer '" . $issuer . "' may not speak for emails from '" . $domainFromEmail . "'");
+        throw new \Exception("issuer '" . $issuer . "' may not speak for emails from '" . $domainFromEmail . "'");
       }
     }
     return $result;

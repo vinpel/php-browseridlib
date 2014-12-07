@@ -80,6 +80,7 @@ class WebToken {
   * @param string $object The data to be signed
   */
   public function __construct($object="") {
+
     $this->payloadSegment = Utils::base64url_encode(json_encode($object));
   }
 
@@ -94,14 +95,19 @@ class WebToken {
   * @return WebToken A Webtoken instance for verification
   */
   public static function parse($input) {
+
     $parts = explode(".", $input);
-    if (sizeof($parts) != 3)
-    throw new MalformedWebTokenException("signed object must have three parts, this one has " . sizeof($parts));
+    if (sizeof($parts) != 3){
+      throw new \Exception("signed object must have three parts, this one has " . sizeof($parts));
+    }
+
 
     $token = new WebToken();
     $token->headerSegment = $parts[0];
     $token->payloadSegment = $parts[1];
     $token->cryptoSegment = $parts[2];
+
+    
     return $token;
   }
 

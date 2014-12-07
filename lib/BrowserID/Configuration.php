@@ -1,5 +1,6 @@
 <?php
 namespace BrowserID;
+
 /**
 * Configuration
 *
@@ -105,16 +106,19 @@ class Configuration {
           'port' => '443',
           'scheme' => 'https',
           'master_idp' => 'login.persona.org',
+          'use_remote_verifier' => true,
+          'assertion_validity' => 300,
+          'identity_validity' => 86400,
+          'base_path' => str_replace('\\','/',substr(__dir__,0,strlen(__dir__)-13)),
+          'var_path' => 'var',
+          'shimmed_path' => 'well-known',
           'remote_verifier_url' => 'https://verifier.login.persona.org/verify',
-            'use_remote_verifier' => true,
-            'assertion_validity' => 300,
-            'identity_validity' => 86400,
-            'base_path' => str_replace('\\','/',substr(__dir__,0,strlen(__dir__)-13)),
-            'var_path' => 'var',
-            'shimmed_path' => 'well-known',
             'shimmed_primaries' => array()
           );
-
+          //configuration based on Yii
+          if (class_exists ('Yii')){
+            $this->g_configs['production']['base_path']=\Yii::getAlias('@storage/BrowserID');
+          }
           // development the only difference from production is that the local
           // verifier is used
           $this->g_configs['developement'] = $this->g_configs['production'];

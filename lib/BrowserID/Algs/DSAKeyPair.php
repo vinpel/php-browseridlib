@@ -1,7 +1,9 @@
 <?php
 namespace BrowserID\Algs;
+use \BrowserID\Math\MathBigInteger;
 use BrowserID\Crypt;
-use BrowserID\Math;
+
+
 /**
  * DSA-SHA Hashing Interface
  *
@@ -43,7 +45,7 @@ use BrowserID\Math;
  * @author      Benjamin Krämer <benjamin.kraemer@alien-scripts.de>
  * @version     1.0.0
  */
-class DSAKeyPair extends AbstractKeyPair {
+class DSAKeyPair extends \BrowserID\AbstractKeyPair {
     /**
      * Is initialized
      *

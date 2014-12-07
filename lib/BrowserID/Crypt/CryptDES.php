@@ -293,7 +293,7 @@ class CryptDES {
      * @return CryptDES
      * @access public
      */
-    function CryptDES($mode = CryptDES_MODE_CBC)
+    function __construct($mode = CryptDES_MODE_CBC)
     {
         if ( !defined('CryptDES_MODE') ) {
             switch (true) {

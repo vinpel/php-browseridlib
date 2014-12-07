@@ -2,6 +2,12 @@
 namespace BrowserID\Algs;
 use BrowserID\Crypt;
 use BrowserID\Math;
+use BrowserID\AbstractPublicKey;
+use BrowserID\Math\MathBigInteger;
+use BrowserID\Utils;
+
+
+use BrowserID\Crypt\CryptDSA;
 /**
  * DSA public key
  *
@@ -104,7 +110,7 @@ class DSAPublicKey extends AbstractPublicKey {
 
         // now this should only happen if the signature was longer
         if (strlen($signature) != ($hexlength * 2)) {
-            throw new AlgorithmException("problem with r/s combo: " . sizeof($signature) . "/" . $hexlength . " - " . $signature);
+            throw new \Exception("problem with r/s combo: " . sizeof($signature) . "/" . $hexlength . " - " . $signature);
         }
 
         $r = new MathBigInteger(substr($signature, 0, $hexlength), 16);
@@ -113,11 +119,11 @@ class DSAPublicKey extends AbstractPublicKey {
 
         // check rangeconstraints
         if (($r->compare(DSAKeyPair::$zero) < 0) || ($r->compare($this->key_q) > 0)) {
-            throw new AlgorithmException("problem with r: " . $r->toString());
+            throw new \Exception("problem with r: " . $r->toString());
         }
 
         if (($s->compare(DSAKeyPair::$zero) < 0) || ($s->compare($this->key_q) > 0)) {
-            throw new AlgorithmException("problem with s: " . $r->toString());
+            throw new \Exception("problem with s: " . $r->toString());
         }
 
         return CryptDSA::verify($message, $hash_alg, $r, $s, $this->key_p, $this->key_q, $this->key_g, $this->key_y);
