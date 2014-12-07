@@ -9,7 +9,11 @@
 		{
 			"name": "Pélisset Vincent",
 			"email": "vinpel@hotmail.com"
-		}
+		},
+    {
+      "name": "Benjamin Krämer",
+      "website": "https://github.com/Falco20019"
+    }
 	],
 	"autoload": {
       "classmap": ["lib/"]
