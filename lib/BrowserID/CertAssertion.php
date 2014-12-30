@@ -138,7 +138,7 @@ class CertAssertion {
         throw new \Exception("scheme mismatch : ".$want['scheme']);
       }
       if (isset($this->audience_port) && $this->audience_port != $want['port']){
-        throw new \Exception("port mismatch : ".$want['port']);
+        throw new \Exception("port mismatch : ".$want['port'].'/'.$this->audience_port);
       }
       if (isset($this->audience_domain) && $this->audience_domain != $want['host']){
         throw new \Exception("domain mismatch ".$want['host'].' et '.$this->audience_domain);
