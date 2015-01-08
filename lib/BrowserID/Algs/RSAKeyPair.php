@@ -2,7 +2,7 @@
 namespace BrowserID\Algs;
 use BrowserID\Crypt;
 use BrowserID\Math;
-
+use BrowserID\Crypt\CryptRSA;
 /**
  * RSA-SHA Hashing Interface
  *
@@ -145,7 +145,9 @@ class RSAKeyPair extends \BrowserID\AbstractKeyPair {
             $private[$key]=bin2hex($val);
          $instance->publicKey =json_encode($public);
           $instance->secretKey =json_encode($private);
-        return array($instance->secretKey,$instance->publicKey);
+            //don't remember why i short cut end of this function...
+        //return array($instance->secretKey,$instance->publicKey);
+
 
 
         $instance->keysize = $keysize;

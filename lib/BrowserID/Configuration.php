@@ -109,7 +109,7 @@ class Configuration {
           'use_remote_verifier' => true,
           'assertion_validity' => 300,
           'identity_validity' => 86400,
-          'base_path' => str_replace('\\','/',substr(__dir__,0,strlen(__dir__)-13)),
+          'base_path' => str_replace('\\','/',substr(__dir__,0,strlen(__dir__)-13)).'storage/BrowserID',
           'var_path' => 'var',
           'shimmed_path' => 'well-known',
           'remote_verifier_url' => 'https://verifier.login.persona.org/verify',
