@@ -88,7 +88,7 @@ use BrowserID\Configuration;
 // call function_exists() a second time to stop the require_once from being called outside
 // of the auto loader
 
-
+include(__DIR__.'/function_crypt_random.php');
 /**
 * Include CryptHash
 */
