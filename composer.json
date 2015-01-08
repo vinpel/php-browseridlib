@@ -1,24 +1,24 @@
 {
   "name": "vinpel/php-browseridlib",
-    "require": {
+  "require": {
         "php": ">=5.4.0"
-    }  
+    },
   "version": "0.0.4.0",
-	"description": "A composer implantation of php-browseridlib",
+  "description": "A composer implantation of php-browseridlib",
 
-	"homepage": "https://github.com/vinpel/php-browseridlib",
-	"type": "library",
-	"authors": [
-		{
-			"name": "Pélisset Vincent",
-			"email": "vinpel@hotmail.com"
-		},
+  "homepage": "https://github.com/vinpel/php-browseridlib",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Pélisset Vincent",
+      "email": "vinpel@hotmail.com"
+    },
     {
       "name": "Benjamin Krämer",
       "website": "https://github.com/Falco20019"
     }
-	],
-	"autoload": {
+  ],
+  "autoload": {
       "classmap": ["lib/"]
-	}
+  }
 }
