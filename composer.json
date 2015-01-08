@@ -1,7 +1,7 @@
 {
   "name": "vinpel/php-browseridlib",
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.4.0"
     }  
   "version": "0.0.4.0",
 	"description": "A composer implantation of php-browseridlib",
