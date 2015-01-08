@@ -3,7 +3,7 @@
   "require": {
         "php": ">=5.4.0"
     },
-  "version": "0.0.4.0",
+  "version": "0.5",
   "description": "A composer implantation of php-browseridlib",
 
   "homepage": "https://github.com/vinpel/php-browseridlib",
