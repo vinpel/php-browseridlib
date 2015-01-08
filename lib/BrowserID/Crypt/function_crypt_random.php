@@ -57,7 +57,7 @@
  * @return Integer
  * @access public
  */
- 
+ if (!function_exists('crypt_random')){
 function crypt_random($min = 0, $max = 0x7FFFFFFF)
 {
     if ($min == $max) {
@@ -140,4 +140,5 @@ function crypt_random($min = 0, $max = 0x7FFFFFFF)
 
     extract(unpack('Nrandom', $crypto->encrypt("\0\0\0\0")));
     return abs($random) % ($max - $min) + $min;
+}
 }

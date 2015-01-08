@@ -2,6 +2,8 @@
 namespace BrowserID\Crypt;
 use BrowserID\Math\MathBigInteger;
 
+use BrowserID\Utils;
+use BrowserID\Configuration;
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
@@ -81,7 +83,7 @@ use BrowserID\Math\MathBigInteger;
 /**
 * Include Crypt_Random
 */
-// the class_exists() will only be called if the cryptRandom function hasn't been defined and
+// the class_exists() will only be called if the crypt_random function hasn't been defined and
 // will trigger a call to __autoload() if you're wanting to auto-load classes
 // call function_exists() a second time to stop the require_once from being called outside
 // of the auto loader
@@ -499,6 +501,7 @@ class CryptRSA {
 
     // OpenSSL uses 65537 as the exponent and requires RSA keys be 384 bits minimum
     if ( CRYPT_RSA_MODE == CRYPT_RSA_MODE_OPENSSL && $bits >= 384 && CRYPT_RSA_EXPONENT == 65537) {
+      $inst = Configuration::getInstance();
       $cnfPath = Utils::path_concat($inst->get('base_path'), $inst->get('var_path'), 'openssl.cnf');
       $rsa = openssl_pkey_new(array(
         'private_key_bits' => $bits,
@@ -541,7 +544,7 @@ class CryptRSA {
     extract($this->_generateMinMax($temp));
 
     $generator = new MathBigInteger();
-    $generator->setRandomGenerator('cryptRandom');
+    $generator->setRandomGenerator('crypt_random');
 
     $n = $this->one->copy();
     if (!empty($partial)) {
@@ -1765,7 +1768,7 @@ function _random($bytes, $nonzero = false)
 {
   $temp = '';
   for ($i = 0; $i < $bytes; $i++) {
-    $temp.= chr(cryptRandom($nonzero, 255));
+    $temp.= chr(crypt_random($nonzero, 255));
   }
   return $temp;
 }
@@ -1852,7 +1855,7 @@ function _exponentiate($x)
     }
 
     $one = new MathBigInteger(1);
-    $one->setRandomGenerator('cryptRandom');
+    $one->setRandomGenerator('crypt_random');
 
     $r = $one->random($one, $smallest->subtract($one));
 
