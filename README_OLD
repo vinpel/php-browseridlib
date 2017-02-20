@@ -1,8 +1,25 @@
-# BrowserID PHP Library
 
+---------------------
+BrowserID PHP Library
+---------------------
+(0) Modification by Vinpel
+(1) Summary
+(2) Requirements
+(3) Release notes
+(4) Usage
+(5) Websites
+(6) Credits
+(7) License
+(8) TODOs
 
-## 1 Summary
+(0) Modification by Vinpel
+-----------
+The project will now be compatible with Composer.
 
+user Yii2 Alias @storage/BrowserID
+
+(1) Summary
+-----------
 
 The library offers functions for verifying BrowserID/Persona assertions either directly
 on the server or using Mozillas fallback verifier. Verifying the assertions directly
@@ -19,10 +36,8 @@ Using the remote verifier is currently the default mode if the environment is se
 to "production". To use the local verifier, open the file /lib/browserid.php and
 uncomment the following line:
 
-```php
-<?php
 Configuration::getInstance()->setEnvironment("developement");
-```
+
 !!! THIS IS NOT ADVISED FOR PRODUCTIONAL USE !!!
 
 This will enable all currently configured developement features like the local verifier
@@ -30,33 +45,26 @@ or shimmed primaries. To get back into the safe production environment, just com
 line out again.
 
 
-## 2 Requirements
-
+(2) Requirements
+----------------
 
 This library uses native JSON support and cURL. Therefore you must use a
 version >= 5.2.0 for it to work. Fallback JSON implementations may follow.
 
 
-## 3 Installation
+(3) Release notes
+-----------------
 
-```
-   composer require vinpel/php-browseridlib
-
-```
-## 4 Release notes
-
-This library offers the working state as of 2012-10-02.
-This code uses some ideas as showed at :
- - https://github.com/mozilla/browserid/tree/dev/lib
- - https://github.com/mozilla/jwcrypto and ported them for PHP.
+This library offers the working state as of 2012-10-02. This code uses some
+ideas as showed at https://github.com/mozilla/browserid/tree/dev/lib and
+https://github.com/mozilla/jwcrypto and ported them for PHP.
 
 
-## 5 Usage
+(4) Usage
+---------
 
-##### Example for verifying an assertion:
-
-```php
-<?php
+Example for verifying an assertion:
+==============================================================
 include('lib/browserid.php');
 $response = Verifier::verify($assertion, 'yoursite.org');
 if ($response["status"] == "okay") {
@@ -66,8 +74,7 @@ if ($response["status"] == "okay") {
     echo $response["reason"];
     ...
 }
-?>
-```
+==============================================================
 
 For more usage examples see the examples folder. Please configure the file
 lib/BrowserID/configuration.php before testing (especially hostname and base_path)
@@ -90,6 +97,16 @@ lib/BrowserID/configuration.php before testing (especially hostname and base_pat
     acting like a identity provider would do while provisioning using the public
     key stored in Secrets::loadPublicKey().
 
+NOTICE:
+If you only want to use the remote verifier on your server, you only have to upload
+the following files without configuring anything:
+    - verify.php
+    - lib/browserid.php
+    - lib/BrowserID/configuration.php
+    - lib/BrowserID/utils.php
+    - lib/BrowserID/verifier.php
+
+
 (5) Websites
 ------------
 
@@ -102,12 +119,32 @@ Persona @ MDN :
 Mozilla Persona Main Page :
 - https://login.persona.org/
 
-Forked from  :
-- https://github.com/Falco20019/php-browseridlib
 
 (6) Credits
 -----------
 
 This library makes use of some external libraries. The following were adopted full or partly:
 - PHPSecLib (http://phpseclib.sourceforge.net by Jim Wigginton)
+- Math_BigInteger (http://pear.php.net/package/Math_BigInteger by Jim Wigginton)
 - Crypt_DSA (http://pear.php.net/pepr/pepr-proposal-show.php?id=467 by TSURUOKA Naoya)
+
+(7) License
+-----------
+
+Copyright (c) 2012 - 2013 Benjamin Krämer
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+(8) TODOs
+---------
+
+Some more data checking of fields needed before accessing them and adding IdP Proxies.
+
+Implement public key cache. First try it with authenticating using the cached public
+key, if this fails, try it with fetching the well-known public key. The cache should
+also expire the keys since it is possible that the public key of a provider may change
+in case it is compromised.

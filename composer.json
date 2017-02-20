@@ -1,24 +1,28 @@
 {
   "name": "vinpel/php-browseridlib",
   "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.6.0",
+    "phpseclib/phpseclib": "master@dev",
+    "symfony/yaml": "^3.2"
     },
   "version": "0.5",
   "description": "A composer implantation of php-browseridlib",
-
   "homepage": "https://github.com/vinpel/php-browseridlib",
   "type": "library",
   "authors": [
     {
       "name": "Pélisset Vincent",
-      "email": "vinpel@hotmail.com"
+      "email": "vinpel@hotmail.com",
+      "homepage": "http://github.com/vinpel"
     },
     {
       "name": "Benjamin Krämer",
-      "website": "https://github.com/Falco20019"
+      "homepage": "https://github.com/Falco20019"
     }
   ],
   "autoload": {
-      "classmap": ["lib/"]
-  }
+      "psr-4": {
+        "BrowserID\\": "BrowserID/"
+      }
+}
 }

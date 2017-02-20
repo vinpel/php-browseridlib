@@ -1,0 +1,11 @@
+#host
+hostname: localhost
+port: 443
+scheme: "https"
+#setup
+master_idp: login.persona.org
+assertion_validity: 300
+identity_validity: 86400
+#directories
+var_path: var
+shimmed_path: well-known

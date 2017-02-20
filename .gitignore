@@ -1,2 +1,5 @@
 /nbproject/private/
 /.well-known/
+/vendor
+
+tests/_output/*
